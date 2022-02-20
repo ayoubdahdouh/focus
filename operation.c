@@ -1,13 +1,13 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
+#include <string.h>
 #include "main.h"
 #include "linklist.h"
 
 #define NAME_SIZE 100
 #define DETAILS_SIZE 1000
 extern char buffer[];
-extern const int buffer_size;
 
 extern linklist tasks_l;
 extern time_t tasks_d;
@@ -15,21 +15,25 @@ extern time_t tasks_d;
 void print_tasks(linklist l)
 {
     int n = 1;
-    const char COLOR_RED[] = '\e[0;31m', COLOR_GREEN[] = '\e[0;32m', COLOR_YELLOW[] = '\e[1;33m', COLOR_BLUE[] = '\e[0;34m', COLOR_NC[] = '\e[0m';
+    const char COLOR_RED[] = "\e[0;31m", COLOR_GREEN[] = "\e[0;32m", COLOR_YELLOW[] = "\e[1;33m",
+               COLOR_BLUE[] = "\e[0;34m", COLOR_NC[] = "\e[0m";
     struct tm *start, *end, *now, *previous_date = NULL;
     task *tmp_task;
     int tmp;
+    time_t time_now;
+
+    time(&time_now);
 
     if (!lempty(l))
     {
-        now = localtime(time(NULL));
+        now = localtime(&time_now);
         literator iter = lat(l, 0);
 
         while (iter)
         {
             tmp_task = (task *)iter->data;
-            start = mktime(&tmp_task->start);
-            end = mktime(&tmp_task->end);
+            start = localtime(&tmp_task->start);
+            end = localtime(&tmp_task->end);
 
             // print day
             if (!previous_date || compare_date(previous_date, start) != 0)
@@ -44,27 +48,32 @@ void print_tasks(linklist l)
             {
                 if (tmp_task->status)
                 {
-                    printf("\t[ %sDONE%s ] %d:%d - %d:%d : %s", COLOR_GREEN, COLOR_NC, start->tm_hour, start->tm_min, end->tm_hour, end->tm_min, tmp_task->name);
+                    printf("\t[ %sDONE%s ] %d:%d - %d:%d : %s", COLOR_GREEN, COLOR_NC,
+                           start->tm_hour, start->tm_min, end->tm_hour, end->tm_min, tmp_task->name);
                 }
                 else
                 {
-                    printf("\t[ %sNOT DONE%s ] %d:%d - %d:%d : %s", COLOR_RED, COLOR_NC, start->tm_hour, start->tm_min, end->tm_hour, end->tm_min, tmp_task->name);
+                    printf("\t[ %sNOT DONE%s ] %d:%d - %d:%d : %s", COLOR_RED, COLOR_NC,
+                           start->tm_hour, start->tm_min, end->tm_hour, end->tm_min, tmp_task->name);
                 }
             }
             else if (tmp == 0)
             {
                 if (compare_time(start, now) >= 0 && compare_time(end, now) <= 0)
                 {
-                    printf("\t[ %sNOW%s ] %d:%d - %d:%d : %s", COLOR_BLUE, COLOR_NC, start->tm_hour, start->tm_min, end->tm_hour, end->tm_min, tmp_task->name);
+                    printf("\t[ %sNOW%s ] %d:%d - %d:%d : %s", COLOR_BLUE, COLOR_NC,
+                           start->tm_hour, start->tm_min, end->tm_hour, end->tm_min, tmp_task->name);
                 }
                 else
                 {
-                    printf("\t[ NOT YET ] %d:%d - %d:%d : %s", start->tm_hour, start->tm_min, end->tm_hour, end->tm_min, tmp_task->name);
+                    printf("\t[ NOT YET ] %d:%d - %d:%d : %s",
+                           start->tm_hour, start->tm_min, end->tm_hour, end->tm_min, tmp_task->name);
                 }
             }
             else
             {
-                printf("[ NOT YET ] %d:%d - %d:%d : %s", start->tm_hour, start->tm_min, end->tm_hour, end->tm_min, tmp_task->name);
+                printf("[ NOT YET ] %d:%d - %d:%d : %s",
+                       start->tm_hour, start->tm_min, end->tm_hour, end->tm_min, tmp_task->name);
             }
             linc(&iter);
         }
@@ -80,20 +89,20 @@ int operation_menu()
 
     int code;
 
-    system("clear");
+    // system("clear");
     do
     {
-        print_tasks(tasks_l);
+        // print_tasks(tasks_l);
         // code
         printf("Choose an operation ?\n\n"
                "1- add\n"
                "2- remove\n"
                "3- modify\n"
                "4- copy\n\n"
-               "6- save modification\n\n"
-               "7- exit\n\n"
+               "5- save modification\n"
+               "6- exit\n\n"
                "(1 by default)>> ");
-        read_line(buffer, buffer_size);
+        read_line(buffer, BUFFER_SIZE);
         if (strlen(buffer) == 0)
         {
             code = 1;
@@ -102,7 +111,7 @@ int operation_menu()
         {
             code = atoi(buffer);
         }
-    } while (code < 1 && code > 7);
+    } while (code < 1 && code > 6);
     return code;
 }
 
@@ -116,32 +125,19 @@ time_t choose_time(const char message[])
     date_tm = localtime(&tasks_d);
     while (ok--)
     {
-        printf(message);
-        fgets(buffer, buffer_size, stdin);
+        printf("%s", message);
+        fgets(buffer, BUFFER_SIZE, stdin);
 
-        // quit if empty (Escape)
-        //  if (strlen(buffer) == 0)
-        //  {
-        //      ok = 0;
-        //  }
-
-        if (sscanf(buffer, "%2d;%2d", &hour, &minute) == 3 &&
+        if (sscanf(buffer, "%d:%d", &hour, &minute) == 2 &&
             hour >= 0 && hour <= 23 && minute >= 0 && minute <= 59)
         {
             when.tm_year = date_tm->tm_year;
             when.tm_mon = date_tm->tm_mon;
             when.tm_mday = date_tm->tm_mday;
-            when.tm_hour = minute;
-            when.tm_min = hour;
+            when.tm_hour = hour;
+            when.tm_min = minute;
             when.tm_sec = 0;
-            if ((tmp = mktime(&when)) != (time_t)-1)
-            {
-                ok = 0;
-            }
-            else
-            {
-                printf("invalid time\n");
-            }
+            ok = 0;
         }
         else
         {
@@ -163,13 +159,26 @@ task *new_task()
 
     printf("Add a new task to the day.\n\n");
 
+    // start time
+    tsk->start = choose_time("start (HH:MM): ");
+    if (!tsk->start)
+    {
+        return NULL;
+    }
+
+    // end time
+    tsk->end = choose_time("end (HH:MM): ");
+    if (!tsk->end)
+    {
+        return NULL;
+    }
+
     // read name
     do
     {
-        printf("task name: ");
+        printf("task name*: ");
         read_line(tsk->name, NAME_SIZE);
     } while (strlen(tsk->name) == 0);
-    strcpy(tsk->name, buffer);
 
     // read details
     printf("task details: ");
@@ -177,22 +186,52 @@ task *new_task()
 
     // read priority
     printf("task priority between 1-3 (1 by default): ");
-    read_line(buffer, buffer_size);
-    tsk->priority = atoi(buffer);
-    if (tsk->priority < 1 && tsk->priority > 3)
+    read_line(buffer, BUFFER_SIZE);
+    if (strlen(buffer) == 0)
     {
         tsk->priority = 1;
     }
+    else
+    {
+        tsk->priority = atoi(buffer);
+        if (tsk->priority < 1 && tsk->priority > 3)
+        {
+            tsk->priority = 1;
+        }
+    }
+
     return tsk;
 }
 
 void add_task()
 {
     task *tsk;
+    struct tm *now, *start;
+    int tmp;
 
     tsk = new_task();
 
-    // add task to the list
+    // now = localtime(&tasks_d);
+
+    // literator iter = lat(tasks_l, LFIRST);
+    // while (iter)
+    // {
+    //     start = localtime(&((task*)iter->data)->start);
+    //     tmp=compare_date(now,start);
+
+    //     if (tmp>0)
+    //     {
+    //         break;
+    //     }
+    //     else if (tmp==0)
+    //     {
+    //         /* code */
+    //     }
+        
+        
+    // }
+
+    // ladd(tasks_l, )
 }
 
 void remove_task() {}

@@ -1,3 +1,9 @@
+.vscode/
+.gitignore
+makefile
+test/
+test/example.c
+
 # Prerequisites
 *.d
 
@@ -50,3 +56,4 @@ modules.order
 Module.symvers
 Mkfile.old
 dkms.conf
+main

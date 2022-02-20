@@ -8,9 +8,9 @@
 
 #define PATH "data_tasks.bin"
 
-const int buffer_size = 1000;
-char buffer[buffer_size];
+char buffer[BUFFER_SIZE];
 
+int is_tasks_l_changed = 0;
 linklist tasks_l;
 time_t tasks_d;
 
@@ -18,7 +18,7 @@ void set_task(int num)
 {
 }
 
-void manage()
+int manage()
 {
     int code;
 
@@ -30,10 +30,9 @@ void manage()
         if (code == 2)
         {
             tasks_d = choose_date();
-            if (tasks_d == (time_t)-1)
+            if (tasks_d == (time_t)-1) // failed to choose date
             {
-                // code
-                return;
+                return 1;
             }
         }
         else
@@ -41,7 +40,7 @@ void manage()
             time(&tasks_d);
         }
         // code
-        read_tasks_by_date(tasks_l,SAMEDAY);
+        // read_tasks_by_date(tasks_l, SAMEDAY);
 
         // lire tasks of today
         code = operation_menu();
@@ -60,9 +59,36 @@ void manage()
             copy_task();
             break;
         case 5:
-            clone_task();
+            save_modification();
             break;
-        default:
+        case 6:
+            // ask to save change
+            if (is_tasks_l_changed)
+            {
+                int ok = 3;
+                do
+                {
+                    // system("clear");
+                    printf("Do you want to save the changes ? [y/n] ");
+                    read_line(buffer, BUFFER_SIZE);
+                    if (strcmp(buffer, "y") && strcmp(buffer, "n") && ok > 1)
+                    {
+                        printf("please select \"y\" for yes and \"n\" for no.\n\n");
+                    }
+                    else
+                    {
+                        // code
+                        // if yes save, if not discard
+                        break;
+                    }
+                } while (--ok);
+
+                if (ok == 0)
+                {
+                    printf("discard the changes\n");
+                    lclear(tasks_l);
+                }
+            }
             break;
         }
     }
@@ -76,17 +102,18 @@ void manage()
     }
     else
     {
-        // ask to save change
-        return;
+
+        return 0;
     }
 
     lclear(tasks_l);
+    return 1;
 }
 
 int main_menu()
 {
     int code;
-    system("clear");
+    // system("clear");
     do
     {
         printf("******** WELCOME ********\n"
@@ -96,7 +123,7 @@ int main_menu()
                "4- show history\n"
                "5- Exit\n\n"
                "(1 by default)>> ");
-        read_line(buffer, buffer_size);
+        read_line(buffer, BUFFER_SIZE);
         if (strlen(buffer) == 0)
         {
             code = 1;
@@ -155,7 +182,7 @@ time_t choose_date()
     while (ok--)
     {
         printf("Enter date (MM/DD/YYYY): ");
-        fgets(buffer, buffer_size, stdin);
+        fgets(buffer, BUFFER_SIZE, stdin);
 
         // quit if empty (Escape)
         //  if (strlen(buffer) == 0)

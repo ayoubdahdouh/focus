@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
+#include <string.h>
 #include "main.h"
 #include "linklist.h"
 
@@ -30,21 +31,21 @@ void write_task(task *tsk)
     size = task_len(tsk);
 
     // write length of tsk
-    fwrite(size, sizeof(int), 1, stream);
+    fwrite(&size, sizeof(int), 1, stream);
 
     // write star and end
-    fwrite(tsk->start, sizeof(time_t), 1, stream);
-    fwrite(tsk->end, sizeof(time_t), 1, stream);
+    fwrite(&tsk->start, sizeof(time_t), 1, stream);
+    fwrite(&tsk->end, sizeof(time_t), 1, stream);
 
     // write status
-    fwrite(tsk->status, sizeof(int), 1, stream);
+    fwrite(&tsk->status, sizeof(int), 1, stream);
 
     // write priority
-    fwrite(tsk->priority, sizeof(int), 1, stream);
+    fwrite(&tsk->priority, sizeof(int), 1, stream);
 
     // write name
     size = strlen(tsk->name);
-    fwrite(size, sizeof(int), 1, stream);
+    fwrite(&size, sizeof(int), 1, stream);
     if (size > 0)
     {
         fwrite(tsk->name, size * sizeof(char), 1, stream);
@@ -52,7 +53,7 @@ void write_task(task *tsk)
 
     // write details
     size = strlen(tsk->details);
-    fwrite(size, sizeof(int), 1, stream);
+    fwrite(&size, sizeof(int), 1, stream);
     if (size > 0)
     {
         fwrite(tsk->details, size * sizeof(char), 1, stream);
@@ -126,7 +127,7 @@ int search_date(time_t date)
 
     rewind(stream);
 
-    date_tm = localtime(date);
+    date_tm = localtime(&date);
 
     while (!found && !feof(stream))
     {
@@ -136,7 +137,7 @@ int search_date(time_t date)
         // read start
         fread(&start, sizeof(time_t), 1, stream);
 
-        date_tm = localtime(start);
+        date_tm = localtime(&start);
 
         tmp = compare_date(date_tm, start_tm);
         if (tmp == 0)
@@ -170,7 +171,7 @@ int read_tasks_by_date(linklist l, direction when)
     // if found
     if (search_date(tasks_d))
     {
-        date_tm = localtime(tasks_d);
+        date_tm = localtime(&tasks_d);
 
         tmp_task = (task *)malloc(sizeof(task));
         if (when == SAMEDAY)
@@ -180,7 +181,7 @@ int read_tasks_by_date(linklist l, direction when)
                 start_tm = localtime(&tmp_task->start);
                 if (compare_date(date_tm, start_tm) == 0)
                 {
-                    ladd(l, tmp_task, LLAST);
+                    ladd(l, LLAST, tmp_task);
                     tmp_task = (task *)malloc(sizeof(task));
                 }
                 else

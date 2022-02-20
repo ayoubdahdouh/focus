@@ -6,35 +6,21 @@
 static char program[] = "todol";
 static char program_version[] = "pre-alpha";
 
-typedef struct Task
-{
-    int date;
-    char name[100];
-    char notes[500];
-    int priority;
-} task;
-
-int parse_args(char const str[]);
-void help();
-void version();
-static void error(char c, char msg[]);
-
 int main(int argc, char const *argv[])
 {
     int code = 0;
-    int num = 9;
-    int code = 0;
-    int num = 9;
+    int num;
 
     if (argc >= 2)
     {
         code = parse_args(argv[1]);
         if (code == -1)
         {
-            error(code, "invalid argument");
+            error(0, "invalid argument");
             return 0;
         }
-        else if (code == 's' && argc != 3)
+        else if (code == 's' && argc != 3 ||
+                 code != 's' && argc != 2)
         {
             error(code, "need a number");
         }
@@ -52,19 +38,23 @@ int main(int argc, char const *argv[])
         num = atoi(argv[2]);
         if (num <= 0)
         {
-            error('s', " need a number");
+            error('s', " task number is required");
         }
         set_task(num);
         break;
     case 'm':
-        manage();
+        while (manage())
+        {
+        }
+
         break;
     default:
+        // show today tasks
         // code
         break;
     }
 
-    printf("code: %c, num: %d\n", code, num);
+    // printf("code: %c, num: %d\n", code, num);
     return 0;
 }
 
