@@ -4,6 +4,8 @@
 #include <time.h>
 #include "linklist.h"
 
+#define BUFFER_SIZE 1000
+
 typedef struct Task
 {
     time_t start;
@@ -64,6 +66,9 @@ void write_all_date_tasks();
 int search_date(struct tm *date);
 int read_all_date_tasks(linklist l, time_t date, direction what);
 
-#define BUFFER_SIZE 1000
+
+// time.c
+struct tm *get_datetime_struct(time_t timer);
+time_t get_datetime(struct tm *timer);
 
 #endif
