@@ -45,7 +45,9 @@ int manage()
         // lire tasks of today
         while (code != 6)
         {
+            printf("--------------------------------------------\n");
             code = operation_menu();
+            printf("--------------------------------------------\n");
             switch (code)
             {
             case 1:

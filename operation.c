@@ -16,8 +16,8 @@ extern time_t tasks_d;
 
 void print_tasks(linklist l)
 {
-    const char COLOR_RED[] = "\e[0;31m", COLOR_GREEN[] = "\e[0;32m", /*COLOR_YELLOW[] = "\e[1;33m",*/
-        COLOR_BLUE[] = "\e[0;34m", COLOR_NC[] = "\e[0m";
+    const char COLOR_RED[] = "\e[0;31m", COLOR_GREEN[] = "\e[0;32m", COLOR_YELLOW[] = "\e[1;33m",
+               COLOR_BLUE[] = "\e[0;34m", COLOR_NC[] = "\e[0m";
     struct tm *start, *end, *now, *previous_date = NULL;
     task *tmp_task;
     int tmp;
@@ -58,20 +58,36 @@ void print_tasks(linklist l)
             }
             else if (tmp == 0)
             {
-                if (compare_time(start, now) >= 0 && compare_time(end, now) <= 0)
+                if (compare_time(start, now) <= 0)
                 {
-                    printf("\t%d- [ %sNOW%s ] %02d:%02d - %02d:%02d : %s\n", cnt++, COLOR_BLUE, COLOR_NC,
-                           start->tm_hour, start->tm_min, end->tm_hour, end->tm_min, tmp_task->name);
+                    if (compare_time(end, now) >= 0)
+                    {
+                        printf("\t%d- [ %sNOW%s ] %02d:%02d - %02d:%02d : %s\n", cnt++, COLOR_BLUE, COLOR_NC,
+                               start->tm_hour, start->tm_min, end->tm_hour, end->tm_min, tmp_task->name);
+                    }
+                    else
+                    {
+                        if (tmp_task->status)
+                        {
+                            printf("\t%d- [ %sDONE%s ] %02d:%02d - %d:%02d : %s\n", cnt++, COLOR_GREEN, COLOR_NC,
+                                   start->tm_hour, start->tm_min, end->tm_hour, end->tm_min, tmp_task->name);
+                        }
+                        else
+                        {
+                            printf("\t%d- [ %sNOT DONE%s ] %02d:%02d - %d:%02d : %s\n", cnt++, COLOR_RED, COLOR_NC,
+                                   start->tm_hour, start->tm_min, end->tm_hour, end->tm_min, tmp_task->name);
+                        }
+                    }
                 }
                 else
                 {
-                    printf("\t%d- [ NOT YET ] %02d:%02d - %02d:%02d : %s\n", cnt++,
+                    printf("\t%d- [ %sNOT YET%s ] %02d:%02d - %02d:%02d : %s\n", cnt++, COLOR_YELLOW, COLOR_NC,
                            start->tm_hour, start->tm_min, end->tm_hour, end->tm_min, tmp_task->name);
                 }
             }
             else
             {
-                printf("%d- [ NOT YET ] %02d:%02d - %02d:%02d : %s\n", cnt++,
+                printf("\t%d- [ %sNOT YET%s ] %02d:%02d - %02d:%02d : %s\n", cnt++, COLOR_YELLOW, COLOR_NC,
                        start->tm_hour, start->tm_min, end->tm_hour, end->tm_min, tmp_task->name);
             }
             linc(&iter);
@@ -139,7 +155,7 @@ time_t choose_time(const char message[])
                 hour >= 0 && hour <= 23)
             {
                 when.tm_hour = hour;
-                tmp = mktime(&when);
+                tmp = get_datetime(&when);
                 ok = 0;
             }
             else
@@ -154,7 +170,7 @@ time_t choose_time(const char message[])
             {
                 when.tm_hour = hour;
                 when.tm_min = minute;
-                tmp = mktime(&when);
+                tmp = get_datetime(&when);
                 ok = 0;
             }
             else
@@ -277,7 +293,6 @@ void add_task()
     tsk = new_task();
     start = get_datetime_struct(tsk->start);
     i = search_time_in_list(start);
-    printf("\n\ni: %d\n\n---add\n", i);
     ladd(tasks_l, i, tsk);
 }
 

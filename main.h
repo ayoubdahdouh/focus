@@ -42,8 +42,6 @@ time_t choose_date();
 // commun.c
 void *alloc_check(int size);
 void read_line(char str[], int n);
-int compare_date(struct tm *date1, struct tm *date2);
-int compare_time(struct tm *date1, struct tm *date2);
 
 // operation.c
 void clone_task();
@@ -70,5 +68,7 @@ int read_all_date_tasks(linklist l, time_t date, direction what);
 // time.c
 struct tm *get_datetime_struct(time_t timer);
 time_t get_datetime(struct tm *timer);
+int compare_date(struct tm *date1, struct tm *date2);
+int compare_time(struct tm *date1, struct tm *date2);
 
 #endif

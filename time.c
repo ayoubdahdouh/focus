@@ -31,3 +31,47 @@ struct tm *get_datetime_struct(time_t timer)
 
     return tmp;
 }
+
+int compare_date(struct tm *date1, struct tm *date2)
+{
+    int tmp;
+    tmp = date1->tm_year - date2->tm_year;
+    if (tmp)
+    {
+        return tmp;
+    }
+    else
+    {
+        tmp = date1->tm_mon - date2->tm_mon;
+        if (tmp)
+        {
+            return tmp;
+        }
+        else
+        {
+            return date1->tm_mday - date2->tm_mday;
+        }
+    }
+}
+
+int compare_time(struct tm *date1, struct tm *date2)
+{
+    int tmp;
+    tmp = date1->tm_hour - date2->tm_hour;
+    if (tmp != 0)
+    {
+        return tmp;
+    }
+    else
+    {
+        tmp = date1->tm_min - date2->tm_min;
+        if (tmp)
+        {
+            return tmp;
+        }
+        else
+        {
+            return date1->tm_sec - date2->tm_sec;
+        }
+    }
+}
