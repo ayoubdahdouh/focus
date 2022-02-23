@@ -21,26 +21,23 @@ void print_tasks(linklist l)
     struct tm *start, *end, *now, *previous_date = NULL;
     task *tmp_task;
     int tmp;
-    time_t time_now;
     int cnt = 1;
-
-    time(&time_now);
 
     if (!lempty(l))
     {
-        now = localtime(&time_now);
+        now = get_datetime_struct(time(NULL));
         literator iter = lat(l, 0);
 
         while (iter)
         {
             tmp_task = (task *)iter->data;
-            start = localtime(&tmp_task->start);
-            end = localtime(&tmp_task->end);
+            start = get_datetime_struct(tmp_task->start);
+            end = get_datetime_struct(tmp_task->end);
 
             // print day
             if (!previous_date || compare_date(previous_date, start) != 0)
             {
-                printf("%d/%d/%d:\n", now->tm_mday, now->tm_mon + 1, now->tm_year + 1900);
+                printf("%d/%d/%d:\n", now->tm_mday, now->tm_mon, now->tm_year);
                 previous_date = start;
             }
 
@@ -125,7 +122,7 @@ time_t choose_time(const char message[])
     time_t tmp = (time_t)-1;
     int ok = 3;
 
-    date_tm = localtime(&tasks_d);
+    date_tm = get_datetime_struct(tasks_d);
     when.tm_year = date_tm->tm_year;
     when.tm_mon = date_tm->tm_mon;
     when.tm_mday = date_tm->tm_mday;
@@ -201,9 +198,10 @@ task *new_task()
     } while (n == 0);
     if (n > NAME_SIZE)
     {
-        n = NAME_SIZE - 1;
+        n = NAME_SIZE;
+        buffer[n - 1] = '\0';
     }
-    tsk->name = (char *)alloc_check(n * sizeof(char));
+    tsk->name = (char *)alloc_check((n + 1) * sizeof(char));
     strncpy(tsk->name, buffer, n);
 
     // read details
@@ -213,7 +211,8 @@ task *new_task()
     {
         if (n > DETAILS_SIZE)
         {
-            n = DETAILS_SIZE - 1;
+            n = DETAILS_SIZE;
+            buffer[n - 1] = '\0';
         }
 
         tsk->details = (char *)alloc_check(n * sizeof(char));
@@ -247,7 +246,7 @@ int search_time_in_list(struct tm *date)
 
     while (iter)
     {
-        start = localtime(&((task *)iter->data)->start);
+        start = get_datetime_struct(((task *)iter->data)->start);
         if (compare_time(date, start) >= 0)
         {
             break;
@@ -276,7 +275,7 @@ void add_task()
     struct tm *start;
 
     tsk = new_task();
-    start = localtime(&tsk->start);
+    start = get_datetime_struct(tsk->start);
     i = search_time_in_list(start);
     printf("\n\ni: %d\n\n---add\n", i);
     ladd(tasks_l, i, tsk);
