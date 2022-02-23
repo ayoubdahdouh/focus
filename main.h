@@ -48,6 +48,7 @@ void clone_task();
 void copy_task();
 void modify_task();
 void remove_task();
+void save_modification();
 void add_task();
 task *new_task();
 time_t choose_time(const char message[]);
@@ -59,9 +60,9 @@ void open_file_if_null();
 void write_task(task *tsk);
 int read_task(task *tsk);
 int task_len(task *tsk);
-void write_tasks_list();
-int search_date(time_t date);
-int read_tasks_by_date(linklist l, direction when);
+void write_all_date_tasks();
+int search_date(struct tm *date);
+int read_all_date_tasks(linklist l, time_t date, direction what);
 
 #define BUFFER_SIZE 1000
 

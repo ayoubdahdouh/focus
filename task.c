@@ -43,53 +43,67 @@ int manage()
         // read_tasks_by_date(tasks_l, SAMEDAY);
 
         // lire tasks of today
-        code = operation_menu();
-        switch (code)
+        while (code != 6)
         {
-        case 1:
-            add_task();
-            break;
-        case 2:
-            remove_task();
-            break;
-        case 3:
-            modify_task();
-            break;
-        case 4:
-            copy_task();
-            break;
-        case 5:
-            save_modification();
-            break;
-        case 6:
-            // ask to save change
-            if (is_tasks_l_changed)
+            code = operation_menu();
+            switch (code)
             {
-                int ok = 3;
-                do
+            case 1:
+                add_task();
+                break;
+            case 2:
+                remove_task();
+                break;
+            case 3:
+                modify_task();
+                break;
+            case 4:
+                copy_task();
+                break;
+            case 5:
+                save_modification();
+                break;
+            case 6:
+                // ask to save change
+                if (is_tasks_l_changed)
                 {
-                    // system("clear");
-                    printf("Do you want to save the changes ? [y/n] ");
-                    read_line(buffer, BUFFER_SIZE);
-                    if (strcmp(buffer, "y") && strcmp(buffer, "n") && ok > 1)
+                    int ok = 3;
+                    do
                     {
-                        printf("please select \"y\" for yes and \"n\" for no.\n\n");
-                    }
-                    else
-                    {
-                        // code
-                        // if yes save, if not discard
-                        break;
-                    }
-                } while (--ok);
+                        // system("clear");
+                        printf("Do you want to save the changes ? [y/n] ");
+                        read_line(buffer, BUFFER_SIZE);
+                        if (strcmp(buffer, "y") && strcmp(buffer, "n") && ok > 1)
+                        {
+                            printf("please select \"y\" for yes and \"n\" for no.\n\n");
+                        }
+                        else
+                        {
+                            if (buffer[0] == 'y')
+                            {
+                                save_modification();
+                                printf("saving the changes...\n");
+                            }
+                            else
+                            {
+                                printf("discard the changes...\n");
+                            }
+                            lclear(tasks_l);
+                            is_tasks_l_changed = 0;
+                            break;
+                        }
+                    } while (--ok);
 
-                if (ok == 0)
-                {
-                    printf("discard the changes\n");
-                    lclear(tasks_l);
+                    if (ok == 0)
+                    {
+                        printf("discard the changes...\n");
+                        lclear(tasks_l);
+                    }
                 }
+                break;
+            default:
+                break;
             }
-            break;
         }
     }
     else if (code == 3)
@@ -106,7 +120,6 @@ int manage()
         return 0;
     }
 
-    lclear(tasks_l);
     return 1;
 }
 
@@ -118,10 +131,10 @@ int main_menu()
     {
         printf("******** WELCOME ********\n"
                "1- today\n"
-               "2- choose a day\n\n"
+               "2- choose a day\n"
                "3- show upcoming\n"
                "4- show history\n"
-               "5- Exit\n\n"
+               "5- exit\n\n"
                "(1 by default)>> ");
         read_line(buffer, BUFFER_SIZE);
         if (strlen(buffer) == 0)

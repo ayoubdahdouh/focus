@@ -24,6 +24,7 @@ void open_file_if_null()
         }
     }
 }
+
 void write_task(task *tsk)
 {
     int size;
@@ -111,23 +112,51 @@ int task_len(task *tsk)
     return size;
 }
 
-void write_tasks_list()
+void write_all_date_tasks(linklist l)
 {
+    int nb = 0;
+    task *last;
+    FILE *tp;
+    struct tm *date_last;
+    long pos;
+
+    last = (task *)lget(l, LLAST);
+    date_last = localtime(&last->start);
+    date_last->tm_mday += 1;
+    search_date(date_last);
+
+    tp = tmpfile();
+
+    pos = ftell(stream);
+
+    while (!feof(stream))
+    {
+        fputc(fgetc(stream), tp);
+        nb++;
+    }
+    fseek(stream, -1 * pos, SEEK_END);
+
+    date_last->tm_mday -= 1;
+    search_date(date_last);
+
+    literator iter;
+    iter = lat(l, LFIRST);
+    while (iter)
+    {
+    }
 }
 
 // find the first task of date.
 // if no task has found, set the cursor
 // to the position where should be a tasks of this date
 // file: ----- date< ----- date(cursor) ----- date> -----
-int search_date(time_t date)
+int search_date(struct tm *date)
 {
     int found = 0, size, tmp;
     time_t start;
-    struct tm *date_tm, *start_tm;
+    struct tm *start_tm;
 
     rewind(stream);
-
-    date_tm = localtime(&date);
 
     while (!found && !feof(stream))
     {
@@ -137,9 +166,9 @@ int search_date(time_t date)
         // read start
         fread(&start, sizeof(time_t), 1, stream);
 
-        date_tm = localtime(&start);
+        start_tm = localtime(&start);
 
-        tmp = compare_date(date_tm, start_tm);
+        tmp = compare_date(date, start_tm);
         if (tmp == 0)
         {
             found = 1;
@@ -160,21 +189,22 @@ int search_date(time_t date)
     return found;
 }
 
-// when = 0: same to date
-// when = 1: int the future
-// when = -1: int the past
-int read_tasks_by_date(linklist l, direction when)
+// what = SAMEDAY: same to date
+// what = FUTURE: in the future
+// what = PAST: in the past
+int read_all_date_tasks(linklist l, time_t date, direction what)
 {
     struct tm *date_tm, *start_tm;
     task *tmp_task;
 
+    date_tm = localtime(&tasks_d);
+
     // if found
-    if (search_date(tasks_d))
+    if (search_date(date_tm))
     {
-        date_tm = localtime(&tasks_d);
 
         tmp_task = (task *)malloc(sizeof(task));
-        if (when == SAMEDAY)
+        if (what == SAMEDAY)
         {
             while (read_task(tmp_task))
             {
@@ -190,7 +220,7 @@ int read_tasks_by_date(linklist l, direction when)
                 }
             }
         }
-        else if (when = FUTURE)
+        else if (what == FUTURE)
         {
             // code
         }

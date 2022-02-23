@@ -23,7 +23,7 @@ typedef struct linklist
 #define LFIRST -2
 
 /*******************
- * list operations 
+ * list operations
  *******************/
 
 // create a new list

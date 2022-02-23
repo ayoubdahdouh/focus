@@ -19,8 +19,8 @@ int main(int argc, char const *argv[])
             error(0, "invalid argument");
             return 0;
         }
-        else if (code == 's' && argc != 3 ||
-                 code != 's' && argc != 2)
+        else if ((code == 's' && argc != 3) ||
+                 (code != 's' && argc != 2))
         {
             error(code, "need a number");
         }
