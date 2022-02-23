@@ -50,31 +50,31 @@ void print_tasks(linklist l)
             {
                 if (tmp_task->status)
                 {
-                    printf("\t%d- [ %sDONE%s ] %d:%d - %d:%d : %s\n", cnt++, COLOR_GREEN, COLOR_NC,
+                    printf("\t%d- [ %sDONE%s ] %02d:%02d - %d:%02d : %s\n", cnt++, COLOR_GREEN, COLOR_NC,
                            start->tm_hour, start->tm_min, end->tm_hour, end->tm_min, tmp_task->name);
                 }
                 else
                 {
-                    printf("\t%d- [ %sNOT DONE%s ] %d:%d - %d:%d : %s\n", cnt++, COLOR_RED, COLOR_NC,
-                                                                                 start->tm_hour, start->tm_min, end->tm_hour, end->tm_min, tmp_task->name);
+                    printf("\t%d- [ %sNOT DONE%s ] %02d:%02d - %d:%02d : %s\n", cnt++, COLOR_RED, COLOR_NC,
+                           start->tm_hour, start->tm_min, end->tm_hour, end->tm_min, tmp_task->name);
                 }
             }
             else if (tmp == 0)
             {
                 if (compare_time(start, now) >= 0 && compare_time(end, now) <= 0)
                 {
-                    printf("\t%d- [ %sNOW%s ] %d:%d - %d:%d : %s\n", cnt++, COLOR_BLUE, COLOR_NC,
-                                                                            start->tm_hour, start->tm_min, end->tm_hour, end->tm_min, tmp_task->name);
+                    printf("\t%d- [ %sNOW%s ] %02d:%02d - %02d:%02d : %s\n", cnt++, COLOR_BLUE, COLOR_NC,
+                           start->tm_hour, start->tm_min, end->tm_hour, end->tm_min, tmp_task->name);
                 }
                 else
                 {
-                    printf("\t%d- [ NOT YET ] %d:%d - %d:%d : %s\n", cnt++,
+                    printf("\t%d- [ NOT YET ] %02d:%02d - %02d:%02d : %s\n", cnt++,
                            start->tm_hour, start->tm_min, end->tm_hour, end->tm_min, tmp_task->name);
                 }
             }
             else
             {
-                printf("%d- [ NOT YET ] %d:%d - %d:%d : %s\n", cnt++,
+                printf("%d- [ NOT YET ] %02d:%02d - %02d:%02d : %s\n", cnt++,
                        start->tm_hour, start->tm_min, end->tm_hour, end->tm_min, tmp_task->name);
             }
             linc(&iter);
@@ -126,26 +126,44 @@ time_t choose_time(const char message[])
     int ok = 3;
 
     date_tm = localtime(&tasks_d);
+    when.tm_year = date_tm->tm_year;
+    when.tm_mon = date_tm->tm_mon;
+    when.tm_mday = date_tm->tm_mday;
+    when.tm_min = 0;
+    when.tm_sec = 0;
     while (ok--)
     {
         printf("%s", message);
         fgets(buffer, BUFFER_SIZE, stdin);
 
-        if (sscanf(buffer, "%d:%d", &hour, &minute) == 2 &&
-            hour >= 0 && hour <= 23 && minute >= 0 && minute <= 59)
+        if (!strchr(buffer, ':'))
         {
-            when.tm_year = date_tm->tm_year;
-            when.tm_mon = date_tm->tm_mon;
-            when.tm_mday = date_tm->tm_mday;
-            when.tm_hour = hour;
-            when.tm_min = minute;
-            when.tm_sec = 0;
-            tmp = mktime(&when);
-            ok = 0;
+            if (sscanf(buffer, "%d", &hour) == 1 &&
+                hour >= 0 && hour <= 23)
+            {
+                when.tm_hour = hour;
+                tmp = mktime(&when);
+                ok = 0;
+            }
+            else
+            {
+                printf("incorrect time format\n");
+            }
         }
         else
         {
-            printf("incorrect time format\n");
+            if (sscanf(buffer, "%d:%d", &hour, &minute) == 2 &&
+                hour >= 0 && hour <= 23 && minute >= 0 && minute <= 59)
+            {
+                when.tm_hour = hour;
+                when.tm_min = minute;
+                tmp = mktime(&when);
+                ok = 0;
+            }
+            else
+            {
+                printf("incorrect time format\n");
+            }
         }
     }
     return tmp;

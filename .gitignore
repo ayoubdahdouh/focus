@@ -4,6 +4,8 @@ makefile
 test/
 test/example.c
 TODO
+todol
+main
 
 # Prerequisites
 *.d
