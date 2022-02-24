@@ -75,7 +75,7 @@ int manage()
                         // system("clear");
                         printf("Do you want to save the changes ? [y/n] ");
                         read_line(buffer, BUFFER_SIZE);
-                        if (strcmp(buffer, "y") && strcmp(buffer, "n") && ok > 1)
+                        if (buffer[0] == 'y' && buffer[0] == 'n' && ok > 1)
                         {
                             printf("please select \"y\" for yes and \"n\" for no.\n\n");
                         }
@@ -127,7 +127,7 @@ int manage()
 
 int main_menu()
 {
-    int code;
+    int n, code;
     // system("clear");
     do
     {
@@ -138,8 +138,8 @@ int main_menu()
                "4- show history\n"
                "5- exit\n\n"
                "(1 by default)>> ");
-        read_line(buffer, BUFFER_SIZE);
-        if (strlen(buffer) == 0)
+        n = read_line(buffer, BUFFER_SIZE);
+        if (n == 0)
         {
             code = 1;
         }

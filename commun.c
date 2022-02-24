@@ -16,28 +16,24 @@ void *alloc_check(int size)
     return ptr;
 }
 
-void read_line(char str[], int n)
+int read_line(char str[], int n)
 {
-    int c;
+    int c = 0;
     int i = 0;
 
-    while (i < n && (c = getchar()) != EOF && c != '\n')
+    while (i < n - 1 && (c = getchar()) != EOF && c != '\n')
     {
         str[i++] = c;
     }
-    if (i == n)
+    str[i] = '\0';
+
+    // empty the buffer
+    if (i == n - 1)
     {
-        str[i - 1] = '\0';
-        // empty the buffer
         while (c != EOF && c != '\n')
         {
             c = getchar();
         }
-        return;
     }
-
-    if (c == EOF || c == '\n')
-    {
-        str[i] = '\0';
-    }
+    return i;
 }

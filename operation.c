@@ -97,13 +97,12 @@ void print_tasks(linklist l)
     {
         printf("\n\tNo tasks!\n");
     }
-    printf("\n");
+    printf("\n");   
 }
 
 int operation_menu()
 {
-
-    int code;
+    int n, code;
 
     // system("clear");
     do
@@ -118,8 +117,8 @@ int operation_menu()
                "5- save\n"
                "6- exit\n\n"
                "(1 by default)>> ");
-        read_line(buffer, BUFFER_SIZE);
-        if (strlen(buffer) == 0)
+        n = read_line(buffer, BUFFER_SIZE);
+        if (n == 0)
         {
             code = 1;
         }
@@ -209,45 +208,39 @@ task *new_task()
     do
     {
         printf("name*: ");
-        read_line(buffer, BUFFER_SIZE);
-        n = strlen(buffer);
+        n = read_line(buffer, NAME_SIZE);
     } while (n == 0);
-    if (n > NAME_SIZE)
-    {
-        n = NAME_SIZE;
-        buffer[n - 1] = '\0';
-    }
     tsk->name = (char *)alloc_check((n + 1) * sizeof(char));
-    strncpy(tsk->name, buffer, n);
+    strncpy(tsk->name, buffer, n + 1);
 
     // read details
     printf("details: ");
-    read_line(buffer, DETAILS_SIZE);
-    if ((n = strlen(buffer)) > 0)
+    n = read_line(buffer, DETAILS_SIZE);
+    if (n > 0)
     {
-        if (n > DETAILS_SIZE)
-        {
-            n = DETAILS_SIZE;
-            buffer[n - 1] = '\0';
-        }
-
-        tsk->details = (char *)alloc_check(n * sizeof(char));
-        strncpy(tsk->details, buffer, n);
+        tsk->details = (char *)alloc_check((n + 1) * sizeof(char));
+        strncpy(tsk->details, buffer, n + 1);
     }
 
     // read priority
     printf("priority from 1 to 5 (1 by default): ");
-    read_line(buffer, BUFFER_SIZE);
-    if (strlen(buffer) == 0)
+    n = read_line(buffer, BUFFER_SIZE);
+    if (n == 0)
     {
         tsk->priority = 1;
     }
     else
     {
         tsk->priority = atoi(buffer);
-        if (tsk->priority < 1 && tsk->priority > 3)
+        if (tsk->priority < 1)
         {
             tsk->priority = 1;
+            printf("the priority is set to the minimum value 1\n");
+        }
+        else if (tsk->priority > 5)
+        {
+            tsk->priority = 5;
+            printf("the priority is set to the maximum value 5\n");
         }
     }
 
