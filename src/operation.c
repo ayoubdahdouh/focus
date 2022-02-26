@@ -97,7 +97,7 @@ void print_tasks(linklist l)
     {
         printf("\n\tNo tasks!\n");
     }
-    printf("\n");   
+    printf("\n");
 }
 
 int operation_menu()
@@ -196,7 +196,6 @@ task *new_task()
     {
         return NULL;
     }
-    printf("end : %s", ctime(&tsk->start));
 
     // end time
     tsk->end = choose_time("end (HH:MM): ");
@@ -204,7 +203,6 @@ task *new_task()
     {
         return NULL;
     }
-    printf("end : %s", ctime(&tsk->end));
 
     // read name
     do
@@ -323,8 +321,233 @@ void remove_task()
         }
     }
 }
+int task_attribute_menu()
+{
+    int n, code;
 
-void modify_task() {}
+    do
+    {
+        printf("Choose an attribute to modify ?\n\n"
+               "1- start time\n"
+               "2- end time\n"
+               "3- name\n"
+               "4- details\n"
+               "5- status\n"
+               "6- priority\n"
+               "7- <=\n\n"
+               "(7 by default)>> ");
+        n = read_line(buffer, BUFFER_SIZE);
+        if (n == 0)
+        {
+            code = 7;
+        }
+        else
+        {
+            code = atoi(buffer);
+        }
+    } while (code < 1 && code > 7);
+    return code;
+}
+
+int choose_number(char const msg[])
+{
+    int num;
+    int ok = NUMBER_OF_TRY;
+
+    while (ok)
+    {
+        ok--;
+        printf("\n%s", msg);
+        read_line(buffer, BUFFER_SIZE);
+        if (sscanf(buffer, "%d", &num) != 1)
+        {
+            printf("incorrect input, please retry\n");
+        }
+        else
+        {
+            break;
+        }
+    }
+    if (ok == 0)
+    {
+        printf("\nyou have tried %d times. abort.\n\n", NUMBER_OF_TRY);
+        return -1;
+    }
+    else
+    {
+        return num;
+    }
+}
+
+// choose non null text
+// int choose_att_name(task *tsk)
+// {
+//     int n;
+//     int ok = NUMBER_OF_TRY;
+
+//     while (ok)
+//     {
+//         ok--;
+//         printf("name: ");
+//         n = read_line(buffer, NAME_SIZE);
+//         if (n > 0)
+//         {
+//             break;
+//         }
+//         else
+//         {
+//             printf("false\n");
+//         }
+//     }
+//     if (ok)
+//     {
+//         tsk->name = (char *)alloc_check((n + 1) * sizeof(char));
+//         strncpy(tsk->name, buffer, n + 1);
+//         return 1;
+//     }
+//     else
+//     {
+//         return 0;
+//     }
+// }
+
+void choose_text(char **dst, const char msg[])
+{
+    int n;
+
+    if (dst)
+    {
+        printf("%s", msg);
+        n = read_line(buffer, BUFFER_SIZE);
+        if (n > 0)
+        {
+            *dst = (char *)alloc_check((n + 1) * sizeof(char));
+            strncpy(*dst, buffer, n + 1);
+        }
+    }
+}
+
+void choose_priority(int *pr)
+{
+    int n;
+    printf("priority from 1 to 5 (1 by default): ");
+    n = read_line(buffer, BUFFER_SIZE);
+    if (n == 0)
+    {
+        *pr = 1;
+    }
+    else
+    {
+        *pr = atoi(buffer);
+        if (*pr < 1)
+        {
+            *pr = 1;
+            printf("the priority is set to the minimum value 1\n");
+        }
+        else if (*pr > 5)
+        {
+            *pr = 5;
+            printf("the priority is set to the maximum value 5\n");
+        }
+    }
+}
+
+int choose_status(int *st)
+{
+    int n;
+    int ok = NUMBER_OF_TRY;
+
+    while (ok)
+    {
+        ok--;
+        printf("is the task done? (\"y\" for yes and \"n\" for no): ");
+        n = read_line(buffer, BUFFER_SIZE);
+        if (n > 0 && (buffer[0] == 'y' || buffer[0] == 'n'))
+        {
+            break;
+        }
+        else
+        {
+            printf("false\n");
+        }
+    }
+    if (ok)
+    {
+        if (buffer[0] == 'y')
+        {
+            *st = 1;
+        }
+        else
+        {
+            *st = 0;
+        }
+        return 1;
+    }
+    else
+    {
+        printf("you have tried %d times\nabort.\n\n", NUMBER_OF_TRY);
+        return 0;
+    }
+}
+
+void modify_task()
+{
+    int num;
+    struct tm *now;
+    task *tmp;
+
+    now = localtime(&tasks_d);
+    printf("Modify the task on %d/%d/%d.\n", now->tm_mday, now->tm_mon, now->tm_year);
+
+    if (tasks_l->count <= 0)
+    {
+        printf("\n\tNo tasks on %d/%d/%d\n\n", now->tm_mday, now->tm_mon, now->tm_year);
+    }
+    else
+    {
+        print_tasks(tasks_l);
+        num = choose_number("type in a task number: ");
+        if (num != -1)
+        {
+            tmp = lget(tasks_l, num - 1);
+            int code;
+
+            code = task_attribute_menu();
+            if (code == 1)
+            {
+                tmp->start = choose_time("start (HH:MM): ");
+                if (!tmp->start)
+                {
+                    return;
+                }
+            }
+            else if (code == 2)
+            {
+                tmp->end = choose_time("end (HH:MM): ");
+                if (!tmp->end)
+                {
+                    return;
+                }
+            }
+            else if (code == 3)
+            {
+                choose_text(&tmp->name, "name: ");
+            }
+            else if (code == 4)
+            {
+                choose_text(&tmp->details, "details: ");
+            }
+            else if (code == 5)
+            {
+                choose_status(&tmp->status);
+            }
+            else if (code == 6)
+            {
+                choose_priority(&tmp->priority);
+            }
+        }
+    }
+}
 void copy_task() {}
 void clone_task() {}
 void save_modification()
