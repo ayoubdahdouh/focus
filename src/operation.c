@@ -6,8 +6,7 @@
 #include "linklist.h"
 
 #define NUMBER_OF_TRY 3
-#define NAME_SIZE 64
-#define DETAILS_SIZE 256
+#define NAME_SIZE 256
 
 extern int is_tasks_l_changed;
 extern char buffer[];
@@ -213,37 +212,6 @@ task *new_task()
     tsk->name = (char *)alloc_check((n + 1) * sizeof(char));
     strncpy(tsk->name, buffer, n + 1);
 
-    // read details
-    printf("details: ");
-    n = read_line(buffer, DETAILS_SIZE);
-    if (n > 0)
-    {
-        tsk->details = (char *)alloc_check((n + 1) * sizeof(char));
-        strncpy(tsk->details, buffer, n + 1);
-    }
-
-    // read priority
-    printf("priority from 1 to 5 (1 by default): ");
-    n = read_line(buffer, BUFFER_SIZE);
-    if (n == 0)
-    {
-        tsk->priority = 1;
-    }
-    else
-    {
-        tsk->priority = atoi(buffer);
-        if (tsk->priority < 1)
-        {
-            tsk->priority = 1;
-            printf("the priority is set to the minimum value 1\n");
-        }
-        else if (tsk->priority > 5)
-        {
-            tsk->priority = 5;
-            printf("the priority is set to the maximum value 5\n");
-        }
-    }
-
     return tsk;
 }
 int search_time_in_list(struct tm *date)
@@ -331,11 +299,9 @@ int task_attribute_menu()
                "1- start time\n"
                "2- end time\n"
                "3- name\n"
-               "4- details\n"
                "5- status\n"
-               "6- priority\n"
-               "7- <=\n\n"
-               "(7 by default)>> ");
+               "6- <=\n\n"
+               "(6 by default)>> ");
         n = read_line(buffer, BUFFER_SIZE);
         if (n == 0)
         {
@@ -345,7 +311,7 @@ int task_attribute_menu()
         {
             code = atoi(buffer);
         }
-    } while (code < 1 && code > 7);
+    } while (code < 1 && code > 6);
     return code;
 }
 
@@ -532,18 +498,6 @@ void modify_task()
             else if (code == 3)
             {
                 choose_text(&tmp->name, "name: ");
-            }
-            else if (code == 4)
-            {
-                choose_text(&tmp->details, "details: ");
-            }
-            else if (code == 5)
-            {
-                choose_status(&tmp->status);
-            }
-            else if (code == 6)
-            {
-                choose_priority(&tmp->priority);
             }
         }
     }

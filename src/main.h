@@ -12,8 +12,8 @@ typedef struct Task
     time_t end;
     int status; // 1:done, 0:not done
     char *name;
-    char *details;
-    int priority;
+    // char *details;
+    // int priority;
 } task;
 
 typedef enum Direction

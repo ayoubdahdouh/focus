@@ -41,23 +41,12 @@ void write_task(task *tsk)
     // write status
     fwrite(&tsk->status, sizeof(int), 1, stream);
 
-    // write priority
-    fwrite(&tsk->priority, sizeof(int), 1, stream);
-
     // write name
     size = strlen(tsk->name);
     fwrite(&size, sizeof(int), 1, stream);
     if (size > 0)
     {
         fwrite(tsk->name, size * sizeof(char), 1, stream);
-    }
-
-    // write details
-    size = strlen(tsk->details);
-    fwrite(&size, sizeof(int), 1, stream);
-    if (size > 0)
-    {
-        fwrite(tsk->details, size * sizeof(char), 1, stream);
     }
 }
 
@@ -76,8 +65,6 @@ int read_task(task *tsk)
         // read status
         fread(&tsk->status, sizeof(int), 1, stream);
 
-        // read priority
-        fread(&tsk->priority, sizeof(int), 1, stream);
 
         // read name
         fread(&len, sizeof(int), 1, stream);
@@ -87,13 +74,6 @@ int read_task(task *tsk)
             fread(tsk->name, len * sizeof(char), 1, stream);
         }
 
-        // read details
-        fread(&len, sizeof(int), 1, stream);
-        if (len > 0)
-        {
-            tsk->details = (char *)alloc_check(len * sizeof(char));
-            fread(tsk->details, len * sizeof(char), 1, stream);
-        }
         return 1;
     }
 
@@ -105,9 +85,8 @@ int task_len(task *tsk)
     int size = 0;
 
     size += sizeof(time_t) * 2;                  // start, end
-    size += sizeof(int) * 2;                     // status, priority
+    size += sizeof(int) ;                     // status
     size += strlen(tsk->name) * sizeof(char);    // name
-    size += strlen(tsk->details) * sizeof(char); // details
 
     return size;
 }
