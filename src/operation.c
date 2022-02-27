@@ -229,21 +229,13 @@ void add_task()
 void remove_task()
 {
     int num;
-    struct tm *now;
-    int n, ok = NUMBER_OF_TRY;
+    int ok = NUMBER_OF_TRY;
 
-    now = localtime(&tasks_d);
-
-    n = tasks_l->count;
-    if (n <= 0)
-    {
-        printf("\n\tNo tasks on %d/%d/%d\n\n", now->tm_mday, now->tm_mon, now->tm_year);
-    }
-    else
+    if (tasks_l->count > 0)
     {
         print_tasks(tasks_l);
         printf("\ntype in a task number: ");
-        while (ok && (scanf("%d", &num) != 1 || num <= 0 || num > n))
+        while (ok && (scanf("%d", &num) != 1 || num <= 0 || num > tasks_l->count))
         {
             printf("incorrect task number, retry\n");
             ok--;
@@ -413,7 +405,7 @@ void modify_task()
                                  "5- <=\n\n"
                                  "(5 by default)>> ";
 
-    now = localtime(&tasks_d);
+    now = get_datetime_struct(tasks_d);
     printf("Modify the task on %d/%d/%d.\n", now->tm_mday, now->tm_mon, now->tm_year);
 
     print_tasks(tasks_l);
