@@ -3,6 +3,8 @@
 #include <time.h>
 #include "main.h"
 
+extern char buffer[];
+
 void *alloc_check(int size)
 {
     void *ptr;
@@ -36,4 +38,17 @@ int read_line(char str[], int n)
         }
     }
     return i;
+}
+
+int choose_from_menu(const char msg[], int min, int max, int dft)
+{
+    int n;
+
+    printf("%s", msg);
+    n = read_line(buffer, BUFFER_SIZE);
+    if (n > 0 && sscanf(buffer, "%d", &n) == 1)
+    {
+        return (n < min || n > max) ? dft : n;
+    }
+    return dft;
 }

@@ -5,7 +5,6 @@
 #include "main.h"
 #include "linklist.h"
 
-#define NUMBER_OF_TRY 3
 #define NAME_SIZE 256
 
 extern int is_tasks_l_changed;
@@ -97,36 +96,6 @@ void print_tasks(linklist l)
         printf("\n\tNo tasks!\n");
     }
     printf("\n");
-}
-
-int operation_menu()
-{
-    int n, code;
-
-    // system("clear");
-    do
-    {
-        print_tasks(tasks_l);
-        // code
-        printf("Choose an operation ?\n\n"
-               "1- add\n"
-               "2- remove\n"
-               "3- modify\n"
-               "4- copy\n"
-               "5- save\n"
-               "6- exit\n\n"
-               "(1 by default)>> ");
-        n = read_line(buffer, BUFFER_SIZE);
-        if (n == 0)
-        {
-            code = 1;
-        }
-        else
-        {
-            code = atoi(buffer);
-        }
-    } while (code < 1 && code > 6);
-    return code;
 }
 
 time_t choose_time(const char message[])
@@ -289,61 +258,6 @@ void remove_task()
         }
     }
 }
-int task_attribute_menu()
-{
-    int n, code;
-
-    do
-    {
-        printf("Choose an attribute to modify ?\n\n"
-               "1- start time\n"
-               "2- end time\n"
-               "3- name\n"
-               "5- status\n"
-               "6- <=\n\n"
-               "(6 by default)>> ");
-        n = read_line(buffer, BUFFER_SIZE);
-        if (n == 0)
-        {
-            code = 7;
-        }
-        else
-        {
-            code = atoi(buffer);
-        }
-    } while (code < 1 && code > 6);
-    return code;
-}
-
-int choose_number(char const msg[])
-{
-    int num;
-    int ok = NUMBER_OF_TRY;
-
-    while (ok)
-    {
-        ok--;
-        printf("\n%s", msg);
-        read_line(buffer, BUFFER_SIZE);
-        if (sscanf(buffer, "%d", &num) != 1)
-        {
-            printf("incorrect input, please retry\n");
-        }
-        else
-        {
-            break;
-        }
-    }
-    if (ok == 0)
-    {
-        printf("\nyou have tried %d times. abort.\n\n", NUMBER_OF_TRY);
-        return -1;
-    }
-    else
-    {
-        return num;
-    }
-}
 
 // choose non null text
 // int choose_att_name(task *tsk)
@@ -456,30 +370,62 @@ int choose_status(int *st)
     }
 }
 
-void modify_task()
+int choose_number(char const msg[])
 {
     int num;
+    int ok = NUMBER_OF_TRY;
+
+    while (ok)
+    {
+        ok--;
+        printf("\n%s", msg);
+        read_line(buffer, BUFFER_SIZE);
+        if (sscanf(buffer, "%d", &num) != 1)
+        {
+            printf("incorrect input, please retry\n");
+        }
+        else
+        {
+            break;
+        }
+    }
+    if (ok == 0)
+    {
+        printf("\nyou have tried %d times. abort.\n\n", NUMBER_OF_TRY);
+        return -1;
+    }
+    else
+    {
+        return num;
+    }
+}
+
+void modify_task()
+{
+    int n;
     struct tm *now;
     task *tmp;
+    const char attribute_msg[] = "Choose an attribute to modify ?\n\n"
+                                 "1- start time\n"
+                                 "2- end time\n"
+                                 "3- name\n"
+                                 "4- status\n"
+                                 "5- <=\n\n"
+                                 "(5 by default)>> ";
 
     now = localtime(&tasks_d);
     printf("Modify the task on %d/%d/%d.\n", now->tm_mday, now->tm_mon, now->tm_year);
 
+    print_tasks(tasks_l);
     if (tasks_l->count <= 0)
     {
-        printf("\n\tNo tasks on %d/%d/%d\n\n", now->tm_mday, now->tm_mon, now->tm_year);
-    }
-    else
-    {
-        print_tasks(tasks_l);
-        num = choose_number("type in a task number: ");
-        if (num != -1)
+        n = choose_number("type in a task number: ");
+        if (n != -1)
         {
-            tmp = lget(tasks_l, num - 1);
-            int code;
+            tmp = lget(tasks_l, n - 1);
 
-            code = task_attribute_menu();
-            if (code == 1)
+            n = choose_from_menu(attribute_msg, 1, 5, 5);
+            if (n == 1)
             {
                 tmp->start = choose_time("start (HH:MM): ");
                 if (!tmp->start)
@@ -487,7 +433,7 @@ void modify_task()
                     return;
                 }
             }
-            else if (code == 2)
+            else if (n == 2)
             {
                 tmp->end = choose_time("end (HH:MM): ");
                 if (!tmp->end)
@@ -495,9 +441,13 @@ void modify_task()
                     return;
                 }
             }
-            else if (code == 3)
+            else if (n == 3)
             {
                 choose_text(&tmp->name, "name: ");
+            }
+            else if (n == 4)
+            {
+                choose_status(&tmp->status);
             }
         }
     }

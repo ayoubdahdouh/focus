@@ -21,10 +21,25 @@ void set_task(int num)
 int manage()
 {
     int code;
+    const char firstmenu_msg[] = "******** WELCOME ********\n"
+                                 "1- today\n"
+                                 "2- choose a day\n"
+                                 "3- show upcoming\n"
+                                 "4- show history\n"
+                                 "5- exit\n\n"
+                                 "(1 by default)>> ";
+    const char operation_msg[] = "Choose an operation ?\n\n"
+                                 "1- add\n"
+                                 "2- remove\n"
+                                 "3- modify\n"
+                                 "4- copy\n"
+                                 "5- save\n"
+                                 "6- exit\n\n"
+                                 "(1 by default)>> ";
 
     tasks_l = lopen();
 
-    code = main_menu();
+    code = choose_from_menu(firstmenu_msg, 1, 5, 1);
     if (code == 1 || code == 2)
     {
         if (code == 2)
@@ -46,7 +61,8 @@ int manage()
         while (code != 6)
         {
             printf("--------------------------------------------\n");
-            code = operation_menu();
+            print_tasks(tasks_l);
+            code = choose_from_menu(operation_msg, 1, 6, 1);
             printf("--------------------------------------------\n");
             switch (code)
             {
@@ -123,32 +139,6 @@ int manage()
     }
 
     return 1;
-}
-
-int main_menu()
-{
-    int n, code;
-    // system("clear");
-    do
-    {
-        printf("******** WELCOME ********\n"
-               "1- today\n"
-               "2- choose a day\n"
-               "3- show upcoming\n"
-               "4- show history\n"
-               "5- exit\n\n"
-               "(1 by default)>> ");
-        n = read_line(buffer, BUFFER_SIZE);
-        if (n == 0)
-        {
-            code = 1;
-        }
-        else
-        {
-            code = atoi(buffer);
-        }
-    } while (code < 1 && code > 5);
-    return code;
 }
 
 void show_upcoming() {}

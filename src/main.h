@@ -5,6 +5,7 @@
 #include "linklist.h"
 
 #define BUFFER_SIZE 1000
+#define NUMBER_OF_TRY 3
 
 typedef struct Task
 {
@@ -32,7 +33,6 @@ int parse_args(char const str[]);
 // task.c
 void set_task(int num);
 int manage();
-int main_menu();
 void show_upcoming();
 void show_history();
 int leap_year(int year);
@@ -42,6 +42,7 @@ time_t choose_date();
 // commun.c
 void *alloc_check(int size);
 int read_line(char str[], int n);
+int choose_from_menu(const char menu[], int min, int max, int dft);
 
 // operation.c
 void clone_task();
@@ -52,7 +53,6 @@ void save_modification();
 void add_task();
 task *new_task();
 time_t choose_time(const char message[]);
-int operation_menu();
 void print_tasks(linklist l);
 
 // io.c
