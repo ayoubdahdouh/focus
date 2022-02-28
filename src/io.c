@@ -5,24 +5,34 @@
 #include "main.h"
 #include "linklist.h"
 
+#define MAX_CHRUNK 2048
 FILE *stream;
 
 extern time_t tasks_d;
+extern char buffer[];
 
 void open_file_if_null()
 {
     if (!stream)
     {
-        if (!stream)
-        {
-            stream = fopen("data_tasks.bin", "ab+");
-        }
+        stream = fopen("data_tasks.bin", "ab+");
         if (!stream)
         {
             error(0, "internal error");
             exit(EXIT_FAILURE);
         }
     }
+}
+
+int task_len(task *tsk)
+{
+    int size = 0;
+
+    size += sizeof(time_t) * 2;                     // start, end
+    size += sizeof(int);                            // status
+    size += (strlen(tsk->name) + 1) * sizeof(char); // name
+
+    return size;
 }
 
 void write_task(task *tsk)
@@ -46,7 +56,7 @@ void write_task(task *tsk)
     fwrite(&size, sizeof(int), 1, stream);
     if (size > 0)
     {
-        fwrite(tsk->name, size * sizeof(char), 1, stream);
+        fwrite(tsk->name, (size + 1) * sizeof(char), 1, stream);
     }
 }
 
@@ -54,9 +64,12 @@ int read_task(task *tsk)
 {
     int size, len;
 
-    if (!feof(stream))
+    if (!feof(stream) && fread(&size, sizeof(int), 1, stream))
     {
-        fread(&size, sizeof(int), 1, stream);
+        if (size == 0)
+        {
+            return 0;
+        }
 
         // read priority
         fread(&tsk->start, sizeof(time_t), 1, stream);
@@ -65,63 +78,113 @@ int read_task(task *tsk)
         // read status
         fread(&tsk->status, sizeof(int), 1, stream);
 
-
         // read name
         fread(&len, sizeof(int), 1, stream);
         if (len > 0)
         {
             tsk->name = (char *)alloc_check(len * sizeof(char));
-            fread(tsk->name, len * sizeof(char), 1, stream);
+            fread(tsk->name, (len + 1) * sizeof(char), 1, stream);
         }
-
         return 1;
     }
 
     return 0;
 }
 
-int task_len(task *tsk)
+void delete_task()
 {
-    int size = 0;
+    int size;
+    long pos, pos2;
+    if (feof(stream))
+    {
+        return;
+    }
 
-    size += sizeof(time_t) * 2;                  // start, end
-    size += sizeof(int) ;                     // status
-    size += strlen(tsk->name) * sizeof(char);    // name
+    pos = ftell(stream);
+    if (fread(&size, sizeof(int), 1, stream) == 0 || size <= 0)
+    {
+        return;
+    }
+    pos2 = pos + size;
+    fseek(stream, pos2, SEEK_SET); // go to next task (ie: after the task to be deleted).
 
-    return size;
+    while (fread(&size, sizeof(int), 1, stream) && size > 0)
+    {
+        fseek(stream, pos2, SEEK_SET); // go bck to beginning of the task
+        fread(buffer, size, 1, stream);
+        fseek(stream, pos, SEEK_SET); // go bck to previous task
+        fwrite(buffer, size, 1, stream);
+        pos += size;
+        pos2 += size; // next task
+    }
+
+    // fill the free space with 0;
+    int i = 0;
+    size = 0;
+    while (!feof(stream))
+    {
+        fwrite(&size, sizeof(int), 1, stream);
+        i++;
+    }
+
+    // resize file to remove free space
+    if (i >= MAX_CHRUNK)
+    {
+        // code
+    }
+}
+
+void seek_end()
+{
+    int size;
+
+    rewind(stream);
+    while (fread(&size, sizeof(int), 1, stream))
+    {
+        if (size == 0)
+        {
+            fseek(stream, -1 * sizeof(int), SEEK_CUR);
+            break;
+        }
+    }
 }
 
 void write_all_date_tasks(linklist l)
 {
-    int nb = 0;
-    task *last;
-    FILE *tp;
-    struct tm *date_last;
-    long pos;
+    task *tsk;
 
-    last = (task *)lget(l, LLAST);
-    date_last = localtime(&last->start);
-    date_last->tm_mday += 1;
-    search_date(date_last);
-
-    tp = tmpfile();
-
-    pos = ftell(stream);
-
-    while (!feof(stream))
+    if (lempty(l))
     {
-        fputc(fgetc(stream), tp);
-        nb++;
+        return;
     }
-    fseek(stream, -1 * pos, SEEK_END);
 
-    date_last->tm_mday -= 1;
-    search_date(date_last);
+    open_file_if_null();
 
-    literator iter;
-    iter = lat(l, LFIRST);
+    literator iter = lat(l, LFIRST);
     while (iter)
     {
+        tsk = (task *)iter->data;
+        // new task
+        if (tsk->flag == TASK_NEW)
+        {
+            seek_end();
+            write_task(tsk);
+        }
+        // modified task
+        else if (tsk->flag == TASK_MODIFIED)
+        {
+            search_date(get_datetime_struct(tasks_d));
+            delete_task();
+            seek_end();
+            write_task(tsk);
+        }
+        // removed task
+        else if (tsk->flag == TASK_REMOVED)
+        {
+            search_date(get_datetime_struct(tasks_d));
+            delete_task();
+        }
+        linc(&iter);
     }
 }
 
@@ -174,40 +237,53 @@ int search_date(struct tm *date)
 int read_all_date_tasks(linklist l, time_t date, direction what)
 {
     struct tm *date_tm, *start_tm;
-    task *tmp_task;
+    task *tsk;
 
-    date_tm = localtime(&tasks_d);
+    open_file_if_null();
+    rewind(stream);
 
-    // if found
-    if (search_date(date_tm))
+    date_tm = get_datetime_struct(date);
+
+    if (what == SAMEDAY)
     {
-
-        tmp_task = (task *)malloc(sizeof(task));
-        if (what == SAMEDAY)
+        tsk = (task *)malloc(sizeof(task));
+        while (read_task(tsk))
         {
-            while (read_task(tmp_task))
+            start_tm = get_datetime_struct(tsk->start);
+            if (compare_date(date_tm, start_tm) == 0)
             {
-                start_tm = localtime(&tmp_task->start);
-                if (compare_date(date_tm, start_tm) == 0)
-                {
-                    ladd(l, LLAST, tmp_task);
-                    tmp_task = (task *)malloc(sizeof(task));
-                }
-                else
-                {
-                    break;
-                }
+                ladd(l, LLAST, tsk);
+                tsk = (task *)malloc(sizeof(task));
             }
         }
-        else if (what == FUTURE)
+        return 1;
+    }
+    else if (what == FUTURE)
+    {
+        tsk = (task *)malloc(sizeof(task));
+        while (read_task(tsk))
         {
-            // code
+            start_tm = get_datetime_struct(tsk->start);
+            if (compare_date(date_tm, start_tm) > 0)
+            {
+                ladd(l, LLAST, tsk);
+                tsk = (task *)malloc(sizeof(task));
+            }
         }
-        else
+        return 1;
+    }
+    else
+    {
+        tsk = (task *)malloc(sizeof(task));
+        while (read_task(tsk))
         {
-            // code
+            start_tm = get_datetime_struct(tsk->start);
+            if (compare_date(date_tm, start_tm) < 0)
+            {
+                ladd(l, LLAST, tsk);
+                tsk = (task *)malloc(sizeof(task));
+            }
         }
-        // ?
         return 1;
     }
     return 0;

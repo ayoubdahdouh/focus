@@ -224,6 +224,8 @@ void add_task()
     start = get_datetime_struct(tsk->start);
     i = search_time_in_list(start);
     ladd(tasks_l, i, tsk);
+    tsk->flag = 1;
+    is_tasks_l_changed = 1;
 }
 
 void remove_task()
@@ -243,6 +245,7 @@ void remove_task()
         if (ok != 0)
         {
             ldel(tasks_l, num - 1);
+            is_tasks_l_changed = 1;
         }
         else
         {
@@ -424,6 +427,8 @@ void modify_task()
                 {
                     return;
                 }
+                tmp->flag = 2;
+                is_tasks_l_changed = 1;
             }
             else if (n == 2)
             {
@@ -432,14 +437,20 @@ void modify_task()
                 {
                     return;
                 }
+                tmp->flag = 2;
+                is_tasks_l_changed = 1;
             }
             else if (n == 3)
             {
                 choose_text(&tmp->name, "name: ");
+                tmp->flag = 2;
+                is_tasks_l_changed = 1;
             }
             else if (n == 4)
             {
                 choose_status(&tmp->status);
+                tmp->flag = 2;
+                is_tasks_l_changed = 1;
             }
         }
     }
@@ -448,9 +459,46 @@ void copy_task() {}
 void clone_task() {}
 void save_modification()
 {
+    // ask to save change
+    if (is_tasks_l_changed)
+    {
+        write_all_date_tasks(tasks_l);
+        is_tasks_l_changed = 0;
+        return;
+    }
+}
+
+void exit_opera()
+{
+    int ok = 3;
+
     if (!is_tasks_l_changed)
     {
         return;
     }
-    write_all_date_tasks();
+    while (ok--)
+    {
+
+        // ask to save change
+        printf("Do you want to save the changes ? [y/n] ");
+        read_line(buffer, BUFFER_SIZE);
+        if (buffer[0] != 'y' && buffer[0] != 'n')
+        {
+            printf("please select \"y\" for yes and \"n\" for no.\n\n");
+        }
+        else
+        {
+            if (buffer[0] == 'y')
+            {
+                save_modification();
+                printf("changes saved.\n");
+            }
+            else
+            {
+                printf("abort.\n");
+            }
+            lclear(tasks_l);
+            ok = 0;
+        }
+    }
 }

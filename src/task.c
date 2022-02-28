@@ -18,6 +18,54 @@ void set_task(int num)
 {
 }
 
+void opera()
+{
+    int code;
+    const char operation_msg[] = "Choose an operation ?\n\n"
+                                 "1- add\n"
+                                 "2- remove\n"
+                                 "3- modify\n"
+                                 "4- copy\n"
+                                 "5- save\n"
+                                 "6- exit\n\n"
+                                 "(1 by default)>> ";
+
+    // code
+    read_all_date_tasks(tasks_l, tasks_d, SAMEDAY);
+
+    // lire tasks of today
+    while (code != 6)
+    {
+        printf("--------------------------------------------\n");
+        print_tasks(tasks_l);
+        code = choose_from_menu(operation_msg, 1, 6, 1);
+        switch (code)
+        {
+        case 1:
+            add_task();
+            break;
+        case 2:
+            remove_task();
+            break;
+        case 3:
+            modify_task();
+            break;
+        case 4:
+            copy_task();
+            break;
+        case 5:
+            save_modification();
+            break;
+        case 6:
+            exit_opera();
+            break;
+        default:
+            break;
+        }
+    }
+
+}
+
 int manage()
 {
     int code;
@@ -27,14 +75,6 @@ int manage()
                                  "3- show upcoming\n"
                                  "4- show history\n"
                                  "5- exit\n\n"
-                                 "(1 by default)>> ";
-    const char operation_msg[] = "Choose an operation ?\n\n"
-                                 "1- add\n"
-                                 "2- remove\n"
-                                 "3- modify\n"
-                                 "4- copy\n"
-                                 "5- save\n"
-                                 "6- exit\n\n"
                                  "(1 by default)>> ";
 
     tasks_l = lopen();
@@ -54,75 +94,7 @@ int manage()
         {
             time(&tasks_d);
         }
-        // code
-        // read_tasks_by_date(tasks_l, SAMEDAY);
-
-        // lire tasks of today
-        while (code != 6)
-        {
-            printf("--------------------------------------------\n");
-            print_tasks(tasks_l);
-            code = choose_from_menu(operation_msg, 1, 6, 1);
-            printf("--------------------------------------------\n");
-            switch (code)
-            {
-            case 1:
-                add_task();
-                break;
-            case 2:
-                remove_task();
-                break;
-            case 3:
-                modify_task();
-                break;
-            case 4:
-                copy_task();
-                break;
-            case 5:
-                save_modification();
-                break;
-            case 6:
-                // ask to save change
-                if (is_tasks_l_changed)
-                {
-                    int ok = 3;
-                    do
-                    {
-                        // system("clear");
-                        printf("Do you want to save the changes ? [y/n] ");
-                        read_line(buffer, BUFFER_SIZE);
-                        if (buffer[0] == 'y' && buffer[0] == 'n' && ok > 1)
-                        {
-                            printf("please select \"y\" for yes and \"n\" for no.\n\n");
-                        }
-                        else
-                        {
-                            if (buffer[0] == 'y')
-                            {
-                                save_modification();
-                                printf("saving the changes...\n");
-                            }
-                            else
-                            {
-                                printf("discard the changes...\n");
-                            }
-                            lclear(tasks_l);
-                            is_tasks_l_changed = 0;
-                            break;
-                        }
-                    } while (--ok);
-
-                    if (ok == 0)
-                    {
-                        printf("discard the changes...\n");
-                        lclear(tasks_l);
-                    }
-                }
-                break;
-            default:
-                break;
-            }
-        }
+        opera();
     }
     else if (code == 3)
     {

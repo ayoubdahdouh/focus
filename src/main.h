@@ -7,14 +7,21 @@
 #define BUFFER_SIZE 1000
 #define NUMBER_OF_TRY 3
 
+typedef enum Task_flag
+{
+    TASK_OK,
+    TASK_NEW,
+    TASK_MODIFIED,
+    TASK_REMOVED
+} task_flag;
+
 typedef struct Task
 {
     time_t start;
     time_t end;
     int status; // 1:done, 0:not done
     char *name;
-    // char *details;
-    // int priority;
+    task_flag flag; // 0:ok, 1:new, 2:modified
 } task;
 
 typedef enum Direction
@@ -29,6 +36,7 @@ void error(char c, char msg[]);
 void version();
 void help();
 int parse_args(char const str[]);
+void opera();
 
 // task.c
 void set_task(int num);
@@ -54,15 +62,17 @@ void add_task();
 task *new_task();
 time_t choose_time(const char message[]);
 void print_tasks(linklist l);
+void exit_opera();
 
 // io.c
 void open_file_if_null();
 void write_task(task *tsk);
 int read_task(task *tsk);
 int task_len(task *tsk);
-void write_all_date_tasks();
+void write_all_date_tasks(linklist l);
 int search_date(struct tm *date);
 int read_all_date_tasks(linklist l, time_t date, direction what);
+void delete_task();
 
 // time.c
 struct tm *get_datetime_struct(time_t timer);

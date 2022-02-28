@@ -6,6 +6,7 @@ test/example.c
 TODO
 todol
 main
+data_tasks.bin
 
 # Prerequisites
 *.d
