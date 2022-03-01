@@ -27,7 +27,9 @@ void opera()
                                  "3- modify\n"
                                  "4- copy\n"
                                  "5- save\n"
-                                 "6- exit\n\n"
+                                 "6- show upcoming\n"
+                                 "7- show history\n"
+                                 "8- exit\n\n"
                                  "(1 by default)>> ";
 
     // code
@@ -38,7 +40,7 @@ void opera()
     {
         printf("--------------------------------------------\n");
         print_tasks(tasks_l);
-        code = choose_from_menu(operation_msg, 1, 6, 1);
+        code = choose_from_menu(operation_msg, 1, 8, 1);
         switch (code)
         {
         case 1:
@@ -57,64 +59,47 @@ void opera()
             save_modification();
             break;
         case 6:
-            exit_opera();
+            show_upcoming();
             break;
-        default:
+        case 7:
+            show_history();
+            break;
+        case 8:
+            exit_opera();
             break;
         }
     }
-
 }
 
 int manage()
 {
     int code;
-    const char firstmenu_msg[] = "******** WELCOME ********\n"
+    const char firstmenu_msg[] = "\nchoose a day\n\n"
                                  "1- today\n"
-                                 "2- choose a day\n"
-                                 "3- show upcoming\n"
-                                 "4- show history\n"
-                                 "5- exit\n\n"
+                                 "2- Other\n"
+                                 "3- exit\n\n"
                                  "(1 by default)>> ";
-
+    printf("****************\\ WELCOME /****************\n");
     tasks_l = lopen();
+    is_tasks_l_changed = 0;
 
-    code = choose_from_menu(firstmenu_msg, 1, 5, 1);
-    if (code == 1 || code == 2)
+    code = choose_from_menu(firstmenu_msg, 1, 3, 1);
+    if (code == 2)
     {
-        if (code == 2)
+        tasks_d = choose_date();
+        if (tasks_d == (time_t)-1) // failed to choose date
         {
-            tasks_d = choose_date();
-            if (tasks_d == (time_t)-1) // failed to choose date
-            {
-                return 1;
-            }
+            return 0;
         }
-        else
-        {
-            time(&tasks_d);
-        }
-        opera();
-    }
-    else if (code == 3)
-    {
-        show_upcoming();
-    }
-    else if (code == 4)
-    {
-        show_history();
     }
     else
     {
-
-        return 0;
+        time(&tasks_d);
     }
+    opera();
 
     return 1;
 }
-
-void show_upcoming() {}
-void show_history() {}
 
 int leap_year(int year)
 {

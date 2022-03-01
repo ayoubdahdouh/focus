@@ -41,8 +41,6 @@ void opera();
 // task.c
 void set_task(int num);
 int manage();
-void show_upcoming();
-void show_history();
 int leap_year(int year);
 int check_date(int day, int month, int year);
 time_t choose_date();
@@ -53,16 +51,17 @@ int read_line(char str[], int n);
 int choose_from_menu(const char menu[], int min, int max, int dft);
 
 // operation.c
-void clone_task();
-void copy_task();
-void modify_task();
-void remove_task();
-void save_modification();
 void add_task();
+void remove_task();
+void modify_task();
+void copy_task();
+void save_modification();
+void show_upcoming();
+void show_history();
+void exit_opera();
 task *new_task();
 time_t choose_time(const char message[]);
 void print_tasks(linklist l);
-void exit_opera();
 
 // io.c
 void open_file_if_null();

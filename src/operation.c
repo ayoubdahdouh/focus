@@ -455,8 +455,6 @@ void modify_task()
         }
     }
 }
-void copy_task() {}
-void clone_task() {}
 void save_modification()
 {
     // ask to save change
@@ -464,7 +462,7 @@ void save_modification()
     {
         write_all_date_tasks(tasks_l);
         is_tasks_l_changed = 0;
-        return;
+        printf("changes saved.\n");
     }
 }
 
@@ -502,3 +500,7 @@ void exit_opera()
         }
     }
 }
+
+void copy_task() {}
+void show_upcoming() {}
+void show_history() {}
