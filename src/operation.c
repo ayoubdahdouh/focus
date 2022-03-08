@@ -231,18 +231,12 @@ void add_task()
 void remove_task()
 {
     int num;
-    int ok = NUMBER_OF_TRY;
 
     if (tasks_l->count > 0)
     {
         print_tasks(tasks_l);
-        printf("\ntype in a task number: ");
-        while (ok && (scanf("%d", &num) != 1 || num <= 0 || num > tasks_l->count))
-        {
-            printf("incorrect task number, retry\n");
-            ok--;
-        }
-        if (ok != 0)
+        num = choose_number("type in a task number: ", 1, tasks_l->count);
+        if (num != -1)
         {
             ldel(tasks_l, num - 1);
             is_tasks_l_changed = 1;
@@ -365,7 +359,7 @@ int choose_status(int *st)
     }
 }
 
-int choose_number(char const msg[])
+int choose_number(char const msg[], int min, int max)
 {
     int num;
     int ok = NUMBER_OF_TRY;
@@ -377,7 +371,11 @@ int choose_number(char const msg[])
         read_line(buffer, BUFFER_SIZE);
         if (sscanf(buffer, "%d", &num) != 1)
         {
-            printf("incorrect input, please retry\n");
+            printf("false\n");
+        }
+        else if (num < min || num > max)
+        {
+            printf("false\n");
         }
         else
         {
@@ -414,7 +412,7 @@ void modify_task()
     print_tasks(tasks_l);
     if (tasks_l->count <= 0)
     {
-        n = choose_number("type in a task number: ");
+        n = choose_number("type in a task number: ", 1, tasks_l->count);
         if (n != -1)
         {
             tmp = lget(tasks_l, n - 1);
@@ -466,7 +464,7 @@ void save_modification()
     }
 }
 
-void exit_opera()
+void exit_program()
 {
     int ok = 3;
 

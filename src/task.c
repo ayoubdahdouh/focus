@@ -18,85 +18,76 @@ void set_task(int num)
 {
 }
 
-void opera()
-{
-    int code;
-    const char operation_msg[] = "Choose an operation ?\n\n"
-                                 "1- add\n"
-                                 "2- remove\n"
-                                 "3- modify\n"
-                                 "4- copy\n"
-                                 "5- save\n"
-                                 "6- show upcoming\n"
-                                 "7- show history\n"
-                                 "8- exit\n\n"
-                                 "(1 by default)>> ";
-
-    // code
-    read_all_date_tasks(tasks_l, tasks_d, SAMEDAY);
-
-    // lire tasks of today
-    while (code != 6)
-    {
-        printf("--------------------------------------------\n");
-        print_tasks(tasks_l);
-        code = choose_from_menu(operation_msg, 1, 8, 1);
-        switch (code)
-        {
-        case 1:
-            add_task();
-            break;
-        case 2:
-            remove_task();
-            break;
-        case 3:
-            modify_task();
-            break;
-        case 4:
-            copy_task();
-            break;
-        case 5:
-            save_modification();
-            break;
-        case 6:
-            show_upcoming();
-            break;
-        case 7:
-            show_history();
-            break;
-        case 8:
-            exit_opera();
-            break;
-        }
-    }
-}
-
 int manage()
 {
-    int code;
-    const char firstmenu_msg[] = "\nchoose a day\n\n"
-                                 "1- today\n"
-                                 "2- Other\n"
-                                 "3- exit\n\n"
-                                 "(1 by default)>> ";
-    printf("****************\\ WELCOME /****************\n");
+    int code, prev_date;
+    const char menu[] = "choose an operation ?\n\n"
+                        "1- choose another day\n"
+                        "2- add\n"
+                        "3- remove\n"
+                        "4- modify\n"
+                        "5- copy\n"
+                        "6- save\n"
+                        "7- show upcoming\n"
+                        "8- show history\n"
+                        "9- exit\n\n"
+                        "(1 by default)>> ";
+
+    printf("****************TODOL****************\n");
     tasks_l = lopen();
     is_tasks_l_changed = 0;
 
-    code = choose_from_menu(firstmenu_msg, 1, 3, 1);
-    if (code == 2)
+    prev_date = time(&tasks_d);
+    read_all_date_tasks(tasks_l, tasks_d, SAMEDAY);
+
+    while (code != 9)
     {
-        tasks_d = choose_date();
-        if (tasks_d == (time_t)-1) // failed to choose date
+        printf("--------------------------------------------\n");
+        print_tasks(tasks_l);
+        code = choose_from_menu(menu, 1, 9, 1);
+        switch (code)
         {
-            return 0;
+        case 2:
+            add_task();
+            break;
+        case 3:
+            remove_task();
+            break;
+        case 4:
+            modify_task();
+            break;
+        case 5:
+            copy_task();
+            break;
+        case 6:
+            save_modification();
+            break;
+        case 7:
+            show_upcoming();
+            break;
+        case 8:
+            show_history();
+            break;
+        case 9:
+            exit_program();
+            break;
+        default:
+            // choose a day
+            tasks_d = choose_date();
+            if (tasks_d == (time_t)-1) // failed to choose date
+            {
+                return 0;
+            }
+            if (prev_date != tasks_d)
+            {
+                prev_date = tasks_d;
+                /* code: save change if exist and empty list and free memory */
+                read_all_date_tasks(tasks_l, tasks_d, SAMEDAY);
+                continue;
+            }
+            break;
         }
     }
-    else
-    {
-        time(&tasks_d);
-    }
-    opera();
 
     return 1;
 }

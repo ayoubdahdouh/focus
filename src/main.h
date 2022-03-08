@@ -58,10 +58,11 @@ void copy_task();
 void save_modification();
 void show_upcoming();
 void show_history();
-void exit_opera();
+void exit_program();
 task *new_task();
 time_t choose_time(const char message[]);
 void print_tasks(linklist l);
+int choose_number(char const msg[], int min, int max);
 
 // io.c
 void open_file_if_null();
