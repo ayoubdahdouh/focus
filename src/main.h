@@ -27,7 +27,7 @@ typedef struct Task
 typedef enum Direction
 {
     PAST = -1,
-    SAMEDAY = 0,
+    SAME_WEEK = 0,
     FUTURE = 1
 } direction;
 

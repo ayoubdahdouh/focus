@@ -244,7 +244,7 @@ int read_all_date_tasks(linklist l, time_t date, direction what)
 
     date_tm = get_datetime_struct(date);
 
-    if (what == SAMEDAY)
+    if (what == SAME_WEEK)
     {
         tsk = (task *)malloc(sizeof(task));
         while (read_task(tsk))

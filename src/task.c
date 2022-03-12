@@ -7,12 +7,12 @@
 #include "linklist.h"
 
 #define PATH "data_tasks.bin"
-
+#define N 7
 char buffer[BUFFER_SIZE];
 
 int is_tasks_l_changed = 0;
-linklist tasks_l;
-time_t tasks_d;
+linklist tasks_l[N]; // 7 day in wekk
+time_t tasks_d, week;
 
 void set_task(int num)
 {
@@ -20,31 +20,35 @@ void set_task(int num)
 
 int manage()
 {
-    int code, prev_date;
-    const char menu[] = "choose an operation ?\n\n"
-                        "1- choose another day\n"
-                        "2- add\n"
-                        "3- remove\n"
-                        "4- modify\n"
-                        "5- copy\n"
-                        "6- save\n"
-                        "7- show upcoming\n"
-                        "8- show history\n"
-                        "9- exit\n\n"
+    int code, prev_week;
+    const char menu[] = "1- add\n"
+                        "2- remove\n"
+                        "3- modify\n"
+                        "4- copy\n"
+                        "5- save\n"
+                        "6- choose another week\n"
+                        "7- exit\n\n"
                         "(1 by default)>> ";
 
     printf("****************TODOL****************\n");
-    tasks_l = lopen();
+
+    for (int i = 0; i < N; i++)
+    {
+        tasks_l[i] = lopen();
+    }
+
+    // tasks_l = lopen();
     is_tasks_l_changed = 0;
 
-    prev_date = time(&tasks_d);
-    read_all_date_tasks(tasks_l, tasks_d, SAMEDAY);
+    prev_week = week = seek_monday(time(NULL));
 
-    while (code != 9)
+    read_all_date_tasks(tasks_l, week, SAME_WEEK);
+
+    while (code != 7)
     {
         printf("--------------------------------------------\n");
         print_tasks(tasks_l);
-        code = choose_from_menu(menu, 1, 9, 1);
+        code = choose_from_menu(menu, 1, 7, 1);
         switch (code)
         {
         case 2:
@@ -78,11 +82,11 @@ int manage()
             {
                 return 0;
             }
-            if (prev_date != tasks_d)
+            if (prev_week != tasks_d)
             {
-                prev_date = tasks_d;
+                prev_week = tasks_d;
                 /* code: save change if exist and empty list and free memory */
-                read_all_date_tasks(tasks_l, tasks_d, SAMEDAY);
+                read_all_date_tasks(tasks_l, tasks_d, SAME_WEEK);
                 continue;
             }
             break;
@@ -90,6 +94,77 @@ int manage()
     }
 
     return 1;
+}
+
+int month_days(int month, int year)
+{
+    if (month < 1 || month > 12)
+    {
+        return 0;
+    }
+
+    // Check for 31 Days
+    if (month == 1 || month == 3 || month == 5 || month == 7 || month == 8 || month == 10 || month == 12)
+    {
+        return 31;
+    }
+
+    // Check for 30 Days
+    else if (month == 4 || month == 6 || month == 9 || month == 11)
+    {
+        return 30;
+    }
+
+    // Check for 28/29 Days
+    else if (month == 2)
+    {
+        if (leap_year(year))
+        {
+            return 29;
+        }
+        else
+        {
+            return 28;
+        }
+    }
+}
+
+// the start of week is monday
+time_t seek_monday(time_t t)
+{
+    struct tm *tmp;
+
+    tmp = get_datetime_struct(t);
+    // monday
+    if (tmp->tm_wday == 1)
+    {
+        return t;
+    }
+    else
+    {
+        if (tmp->tm_mday >= tmp->tm_wday)
+        {
+            tmp->tm_mday -= tmp->tm_wday - 1;
+        }
+        else
+        {
+            int dif = tmp->tm_wday - tmp->tm_mday - 1;
+            if (tmp->tm_mon == 1)
+            {
+                tmp->tm_year--;
+                tmp->tm_mon = 12;
+                tmp->tm_mday = 31 - dif;
+            }
+            else
+            {
+                tmp->tm_mon--;
+                tmp->tm_mday = month_days(tmp->tm_mon, tmp->tm_year) - dif;
+            }
+        }
+    }
+    tmp->tm_wday = 1;
+
+    return get_datetime(tmp);
 }
 
 int leap_year(int year)
