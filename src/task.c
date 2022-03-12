@@ -7,12 +7,11 @@
 #include "linklist.h"
 
 #define PATH "data_tasks.bin"
-#define N 7
 char buffer[BUFFER_SIZE];
 
 int is_tasks_l_changed = 0;
 linklist tasks_l[N]; // 7 day in wekk
-time_t tasks_d, week;
+time_t week;
 
 void set_task(int num)
 {
@@ -51,44 +50,39 @@ int manage()
         code = choose_from_menu(menu, 1, 7, 1);
         switch (code)
         {
-        case 2:
+        case 1:
             add_task();
             break;
-        case 3:
+        case 2:
             remove_task();
             break;
-        case 4:
+        case 3:
             modify_task();
             break;
-        case 5:
+        case 4:
             copy_task();
             break;
-        case 6:
+        case 5:
             save_modification();
             break;
-        case 7:
-            show_upcoming();
-            break;
-        case 8:
-            show_history();
-            break;
-        case 9:
-            exit_program();
-            break;
-        default:
+        case 6:
             // choose a day
-            tasks_d = choose_date();
-            if (tasks_d == (time_t)-1) // failed to choose date
+            week = choose_date();
+            if (week == (time_t)-1) // failed to choose date
             {
                 return 0;
             }
-            if (prev_week != tasks_d)
+            week = seek_monday(week);
+            if (prev_week != week)
             {
-                prev_week = tasks_d;
+                prev_week = week;
                 /* code: save change if exist and empty list and free memory */
-                read_all_date_tasks(tasks_l, tasks_d, SAME_WEEK);
+                read_all_date_tasks(tasks_l, week, SAME_WEEK);
                 continue;
             }
+            break;
+        default:
+            exit_program();
             break;
         }
     }

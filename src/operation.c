@@ -10,8 +10,17 @@
 extern int is_tasks_l_changed;
 extern char buffer[];
 extern linklist tasks_l;
-extern time_t tasks_d;
+extern time_t week;
 
+void print_week_tasks(linklist l[])
+{
+    char days_of_the_week[] = {"Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"};
+    for (int i = 0; i < N; i++)
+    {
+        printf("%s\n", days_of_the_week[i]);
+        print_tasks(l[i]);
+    }
+}
 void print_tasks(linklist l)
 {
     const char COLOR_RED[] = "\e[0;31m", COLOR_GREEN[] = "\e[0;32m", COLOR_YELLOW[] = "\e[1;33m",
@@ -24,7 +33,7 @@ void print_tasks(linklist l)
     if (!lempty(l))
     {
         now = get_datetime_struct(time(NULL));
-        literator iter = lat(l, 0);
+        literator iter = lat(l, LFIRST);
 
         while (iter)
         {
@@ -33,11 +42,11 @@ void print_tasks(linklist l)
             end = get_datetime_struct(tmp_task->end);
 
             // print day
-            if (!previous_date || compare_date(previous_date, start) != 0)
-            {
-                printf("%d/%d/%d:\n", now->tm_mday, now->tm_mon, now->tm_year);
-                previous_date = start;
-            }
+            // if (!previous_date || compare_date(previous_date, start) != 0)
+            // {
+            //     printf("%d/%d/%d:\n", now->tm_mday, now->tm_mon, now->tm_year);
+            //     previous_date = start;
+            // }
 
             // print tasks
             tmp = compare_date(start, now);
@@ -105,7 +114,7 @@ time_t choose_time(const char message[])
     time_t tmp = (time_t)-1;
     int ok = 3;
 
-    date_tm = get_datetime_struct(tasks_d);
+    date_tm = get_datetime_struct(week);
     when.tm_year = date_tm->tm_year;
     when.tm_mon = date_tm->tm_mon;
     when.tm_mday = date_tm->tm_mday;
@@ -406,7 +415,7 @@ void modify_task()
                                  "5- <=\n\n"
                                  "(5 by default)>> ";
 
-    now = get_datetime_struct(tasks_d);
+    now = get_datetime_struct(week);
     printf("Modify the task on %d/%d/%d.\n", now->tm_mday, now->tm_mon, now->tm_year);
 
     print_tasks(tasks_l);

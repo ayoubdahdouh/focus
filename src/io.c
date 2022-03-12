@@ -8,7 +8,7 @@
 #define MAX_CHRUNK 2048
 FILE *stream;
 
-extern time_t tasks_d;
+extern time_t week;
 extern char buffer[];
 
 void open_file_if_null()
@@ -173,7 +173,7 @@ void write_all_date_tasks(linklist l)
         // modified task
         else if (tsk->flag == TASK_MODIFIED)
         {
-            search_date(get_datetime_struct(tasks_d));
+            search_date(get_datetime_struct(week));
             delete_task();
             seek_end();
             write_task(tsk);
@@ -181,7 +181,7 @@ void write_all_date_tasks(linklist l)
         // removed task
         else if (tsk->flag == TASK_REMOVED)
         {
-            search_date(get_datetime_struct(tasks_d));
+            search_date(get_datetime_struct(week));
             delete_task();
         }
         linc(&iter);

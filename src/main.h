@@ -6,6 +6,7 @@
 
 #define BUFFER_SIZE 1000
 #define NUMBER_OF_TRY 3
+#define N 7
 
 typedef enum Task_flag
 {
@@ -51,6 +52,7 @@ int read_line(char str[], int n);
 int choose_from_menu(const char menu[], int min, int max, int dft);
 
 // operation.c
+void print_week_tasks(linklist l[]);
 void add_task();
 void remove_task();
 void modify_task();
