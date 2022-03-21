@@ -2,6 +2,7 @@
 .gitignore
 makefile
 test/
+build/
 test/example.c
 TODO
 todol

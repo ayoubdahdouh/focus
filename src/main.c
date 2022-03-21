@@ -2,8 +2,9 @@
 #include <string.h>
 #include <stdlib.h>
 #include "main.h"
+#include "src.h"
 
-static char program[] = "todol";
+static char program[] = "focus";
 static char program_version[] = "pre-alpha";
 
 int main(int argc, char const *argv[])

@@ -4,7 +4,7 @@
 #include <ctype.h>
 #include <string.h>
 #include "main.h"
-#include "linklist.h"
+#include "src.h"
 
 #define PATH "data_tasks.bin"
 char buffer[BUFFER_SIZE];
@@ -19,6 +19,7 @@ void set_task(int num)
 
 int manage()
 {
+    time_t time_tmp;
     int code, prev_week;
     const char menu[] = "1- add\n"
                         "2- remove\n"
@@ -28,8 +29,12 @@ int manage()
                         "6- choose another week\n"
                         "7- exit\n\n"
                         "(1 by default)>> ";
-
-    printf("****************TODOL****************\n");
+    printf("\t  _            _       _ \n"
+           "\t | |_ ___   __| | ___ | |\n"
+           "\t | __/ _ \\ / _` |/ _ \\| |\n"
+           "\t | || (_) | (_| | (_) | |\n"
+           "\t  \\__\\___/ \\__,_|\\___/|_|\n");
+    // printf("**********************************\n");
 
     for (int i = 0; i < N; i++)
     {
@@ -46,7 +51,7 @@ int manage()
     while (code != 7)
     {
         printf("--------------------------------------------\n");
-        print_tasks(tasks_l);
+        print_week(tasks_l);
         code = choose_from_menu(menu, 1, 7, 1);
         switch (code)
         {
@@ -67,12 +72,12 @@ int manage()
             break;
         case 6:
             // choose a day
-            week = choose_date();
-            if (week == (time_t)-1) // failed to choose date
+            time_tmp = choose_date();
+            if (time_tmp == (time_t)-1) // failed to choose date
             {
-                return 0;
+                continue;
             }
-            week = seek_monday(week);
+            week = seek_monday(time_tmp);
             if (prev_week != week)
             {
                 prev_week = week;
@@ -88,77 +93,6 @@ int manage()
     }
 
     return 1;
-}
-
-int month_days(int month, int year)
-{
-    if (month < 1 || month > 12)
-    {
-        return 0;
-    }
-
-    // Check for 31 Days
-    if (month == 1 || month == 3 || month == 5 || month == 7 || month == 8 || month == 10 || month == 12)
-    {
-        return 31;
-    }
-
-    // Check for 30 Days
-    else if (month == 4 || month == 6 || month == 9 || month == 11)
-    {
-        return 30;
-    }
-
-    // Check for 28/29 Days
-    else if (month == 2)
-    {
-        if (leap_year(year))
-        {
-            return 29;
-        }
-        else
-        {
-            return 28;
-        }
-    }
-}
-
-// the start of week is monday
-time_t seek_monday(time_t t)
-{
-    struct tm *tmp;
-
-    tmp = get_datetime_struct(t);
-    // monday
-    if (tmp->tm_wday == 1)
-    {
-        return t;
-    }
-    else
-    {
-        if (tmp->tm_mday >= tmp->tm_wday)
-        {
-            tmp->tm_mday -= tmp->tm_wday - 1;
-        }
-        else
-        {
-            int dif = tmp->tm_wday - tmp->tm_mday - 1;
-            if (tmp->tm_mon == 1)
-            {
-                tmp->tm_year--;
-                tmp->tm_mon = 12;
-                tmp->tm_mday = 31 - dif;
-            }
-            else
-            {
-                tmp->tm_mon--;
-                tmp->tm_mday = month_days(tmp->tm_mon, tmp->tm_year) - dif;
-            }
-        }
-    }
-    tmp->tm_wday = 1;
-
-    return get_datetime(tmp);
 }
 
 int leap_year(int year)
@@ -232,4 +166,72 @@ time_t choose_date()
         }
     }
     return tmp;
+}
+
+// the start of week is monday
+time_t seek_monday(time_t t)
+{
+    struct tm *tmp;
+
+    tmp = get_datetime_struct(t);
+    // monday
+    if (tmp->tm_wday == 1)
+    {
+        return t;
+    }
+    else
+    {
+        if (tmp->tm_mday >= tmp->tm_wday)
+        {
+            tmp->tm_mday -= tmp->tm_wday - 1;
+        }
+        else
+        {
+            int dif = tmp->tm_wday - tmp->tm_mday - 1;
+            if (tmp->tm_mon == 1)
+            {
+                tmp->tm_year--;
+                tmp->tm_mon = 12;
+                tmp->tm_mday = 31 - dif;
+            }
+            else
+            {
+                tmp->tm_mon--;
+                tmp->tm_mday = month_days(tmp->tm_mon, tmp->tm_year) - dif;
+            }
+        }
+    }
+    tmp->tm_wday = 1;
+
+    return get_datetime(tmp);
+}
+
+int month_days(int month, int year)
+{
+    if (month < 1 || month > 12)
+    {
+        return 0;
+    }
+    // Check for 31 Days
+    if (month == 1 || month == 3 || month == 5 || month == 7 || month == 8 || month == 10 || month == 12)
+    {
+        return 31;
+    }
+    // Check for 30 Days
+    else if (month == 4 || month == 6 || month == 9 || month == 11)
+    {
+        return 30;
+    }
+    // if (month == 2) : Check for 28/29 Days
+    else
+    {
+        if (leap_year(year))
+        {
+            return 29;
+        }
+        else
+        {
+            return 28;
+        }
+    }
 }

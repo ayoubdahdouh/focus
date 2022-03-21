@@ -2,8 +2,9 @@
 #include <stdlib.h>
 #include <time.h>
 #include <string.h>
-#include "main.h"
-#include "linklist.h"
+#include "../src.h"
+#include "../main.h"
+#include "input_output.h"
 
 #define MAX_CHRUNK 2048
 FILE *stream;
@@ -18,7 +19,7 @@ void open_file_if_null()
         stream = fopen("data_tasks.bin", "ab+");
         if (!stream)
         {
-            error(0, "internal error");
+            // error(0, "internal error");
             exit(EXIT_FAILURE);
         }
     }
@@ -149,43 +150,43 @@ void seek_end()
     }
 }
 
-void write_all_date_tasks(linklist l)
+void write_all_date_tasks(linklist l[])
 {
-    task *tsk;
+    // task *tsk;
 
-    if (lempty(l))
-    {
-        return;
-    }
+    // if (lempty(l))
+    // {
+    //     return;
+    // }
 
-    open_file_if_null();
+    // open_file_if_null();
 
-    literator iter = lat(l, LFIRST);
-    while (iter)
-    {
-        tsk = (task *)iter->data;
-        // new task
-        if (tsk->flag == TASK_NEW)
-        {
-            seek_end();
-            write_task(tsk);
-        }
-        // modified task
-        else if (tsk->flag == TASK_MODIFIED)
-        {
-            search_date(get_datetime_struct(week));
-            delete_task();
-            seek_end();
-            write_task(tsk);
-        }
-        // removed task
-        else if (tsk->flag == TASK_REMOVED)
-        {
-            search_date(get_datetime_struct(week));
-            delete_task();
-        }
-        linc(&iter);
-    }
+    // literator iter = lat(l, LFIRST);
+    // while (iter)
+    // {
+    //     tsk = (task *)iter->data;
+    //     // new task
+    //     if (tsk->flag == TASK_NEW)
+    //     {
+    //         seek_end();
+    //         write_task(tsk);
+    //     }
+    //     // modified task
+    //     else if (tsk->flag == TASK_MODIFIED)
+    //     {
+    //         search_date(get_datetime_struct(week));
+    //         delete_task();
+    //         seek_end();
+    //         write_task(tsk);
+    //     }
+    //     // removed task
+    //     else if (tsk->flag == TASK_REMOVED)
+    //     {
+    //         search_date(get_datetime_struct(week));
+    //         delete_task();
+    //     }
+    //     linc(&iter);
+    // }
 }
 
 // find the first task of date.
@@ -234,57 +235,57 @@ int search_date(struct tm *date)
 // what = SAMEDAY: same to date
 // what = FUTURE: in the future
 // what = PAST: in the past
-int read_all_date_tasks(linklist l, time_t date, direction what)
+int read_all_date_tasks(linklist l[], time_t date, direction what)
 {
-    struct tm *date_tm, *start_tm;
-    task *tsk;
+    // struct tm *date_tm, *start_tm;
+    // task *tsk;
 
-    open_file_if_null();
-    rewind(stream);
+    // open_file_if_null();
+    // rewind(stream);
 
-    date_tm = get_datetime_struct(date);
+    // date_tm = get_datetime_struct(date);
 
-    if (what == SAME_WEEK)
-    {
-        tsk = (task *)malloc(sizeof(task));
-        while (read_task(tsk))
-        {
-            start_tm = get_datetime_struct(tsk->start);
-            if (compare_date(date_tm, start_tm) == 0)
-            {
-                ladd(l, LLAST, tsk);
-                tsk = (task *)malloc(sizeof(task));
-            }
-        }
-        return 1;
-    }
-    else if (what == FUTURE)
-    {
-        tsk = (task *)malloc(sizeof(task));
-        while (read_task(tsk))
-        {
-            start_tm = get_datetime_struct(tsk->start);
-            if (compare_date(date_tm, start_tm) > 0)
-            {
-                ladd(l, LLAST, tsk);
-                tsk = (task *)malloc(sizeof(task));
-            }
-        }
-        return 1;
-    }
-    else
-    {
-        tsk = (task *)malloc(sizeof(task));
-        while (read_task(tsk))
-        {
-            start_tm = get_datetime_struct(tsk->start);
-            if (compare_date(date_tm, start_tm) < 0)
-            {
-                ladd(l, LLAST, tsk);
-                tsk = (task *)malloc(sizeof(task));
-            }
-        }
-        return 1;
-    }
+    // if (what == SAME_WEEK)
+    // {
+    //     tsk = (task *)malloc(sizeof(task));
+    //     while (read_task(tsk))
+    //     {
+    //         start_tm = get_datetime_struct(tsk->start);
+    //         if (compare_date(date_tm, start_tm) == 0)
+    //         {
+    //             ladd(l, LLAST, tsk);
+    //             tsk = (task *)malloc(sizeof(task));
+    //         }
+    //     }
+    //     return 1;
+    // }
+    // else if (what == FUTURE)
+    // {
+    //     tsk = (task *)malloc(sizeof(task));
+    //     while (read_task(tsk))
+    //     {
+    //         start_tm = get_datetime_struct(tsk->start);
+    //         if (compare_date(date_tm, start_tm) > 0)
+    //         {
+    //             ladd(l, LLAST, tsk);
+    //             tsk = (task *)malloc(sizeof(task));
+    //         }
+    //     }
+    //     return 1;
+    // }
+    // else
+    // {
+    //     tsk = (task *)malloc(sizeof(task));
+    //     while (read_task(tsk))
+    //     {
+    //         start_tm = get_datetime_struct(tsk->start);
+    //         if (compare_date(date_tm, start_tm) < 0)
+    //         {
+    //             ladd(l, LLAST, tsk);
+    //             tsk = (task *)malloc(sizeof(task));
+    //         }
+    //     }
+    //     return 1;
+    // }
     return 0;
 }

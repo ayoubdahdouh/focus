@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <time.h>
 #include "main.h"
+#include "src.h"
 
 extern char buffer[];
 
@@ -52,3 +53,4 @@ int choose_from_menu(const char msg[], int min, int max, int dft)
     }
     return dft;
 }
+
