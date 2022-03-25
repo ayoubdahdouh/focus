@@ -1,6 +1,8 @@
 #ifndef SRC_H
 #define SRC_H
 
+#include <time.h>
+
 // main.h
 void version();
 void help();

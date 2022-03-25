@@ -4,26 +4,25 @@
 #include "../main.h"
 #include "../src.h"
 
-static int day;
 
 void add_task()
 {
     int i;
     task *tsk;
     struct tm *start;
-
-    tsk = new_task();
+    int day;
+    tsk = new_task(&day);
     if (tsk)
     {
         start = get_datetime_struct(tsk->start);
-        i = search_time_in_list(start);
+        i = search_time_in_list(day,start);
         ladd(tasks_l[day], i, tsk);
         tsk->flag = 1;
         is_tasks_l_changed = 1;
     }
 }
 
-task *new_task()
+task *new_task(int *day)
 {
     int n;
     task *tsk;
@@ -32,8 +31,8 @@ task *new_task()
 
     printf("Add a new task to the week.\n\n");
 
-    day = choose_week_day();
-    if (day == -1)
+    *day = choose_week_day();
+    if (*day == -1)
     {
         return NULL;
     }

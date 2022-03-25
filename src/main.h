@@ -41,6 +41,7 @@ extern int is_tasks_l_changed;
 extern char buffer[];
 extern linklist tasks_l[];
 extern time_t week;
+// extern int day;
 
 
 

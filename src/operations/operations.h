@@ -9,13 +9,13 @@ void choose_priority(int *pr);
 int choose_status(int *st);
 int choose_number(char const msg[], int min, int max);
 void choose_text(char **dst, const char msg[]);
-int search_time_in_list(struct tm *date);
+int search_time_in_list(int day, struct tm *date);
 int choose_week_day();
 
 
 // add.c
 void add_task();
-task *new_task();
+task *new_task(int *day);
 
 // remove.c
 void remove_task();

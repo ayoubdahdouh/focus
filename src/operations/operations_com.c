@@ -170,7 +170,7 @@ void choose_text(char **dst, const char msg[])
     }
 }
 
-int search_time_in_list(struct tm *date)
+int search_time_in_list(int day, struct tm *date)
 {
     int i = 0;
     struct tm *start;

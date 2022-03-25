@@ -31,7 +31,7 @@ void exit_program()
             {
                 printf("abort.\n");
             }
-            lclear(tasks_l);
+            lclear(tasks_l[0]);
             ok = 0;
         }
     }

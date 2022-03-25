@@ -3,7 +3,6 @@
 #include "operations.h"
 #include "../src.h"
 
-static int day;
 void modify_task()
 {
     int n;
@@ -20,7 +19,7 @@ void modify_task()
     now = get_datetime_struct(week);
     printf("Modify the task on %d/%d/%d.\n", now->tm_mday, now->tm_mon, now->tm_year);
 
-    day = choose_week_day();
+    int day = choose_week_day();
 
     print_week(tasks_l);
     if (tasks_l[day]->count <= 0)

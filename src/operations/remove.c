@@ -2,12 +2,11 @@
 #include <string.h>
 #include "operations.h"
 
-static int day;
 void remove_task()
 {
     int num;
 
-    day = choose_week_day();
+    int day = choose_week_day();
     if (tasks_l[day]->count > 0)
     {
         print_week(tasks_l);

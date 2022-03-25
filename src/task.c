@@ -10,7 +10,7 @@
 char buffer[BUFFER_SIZE];
 
 int is_tasks_l_changed = 0;
-linklist tasks_l[N]; // 7 day in wekk
+linklist tasks_l[N]; // 7 day of the wekk
 time_t week;
 
 void set_task(int num)
@@ -52,6 +52,7 @@ int manage()
     {
         printf("--------------------------------------------\n");
         print_week(tasks_l);
+        printf("--------------------------------------------\n");
         code = choose_from_menu(menu, 1, 7, 1);
         switch (code)
         {
