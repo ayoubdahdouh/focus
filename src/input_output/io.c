@@ -83,7 +83,7 @@ int read_task(task *tsk)
         fread(&len, sizeof(int), 1, stream);
         if (len > 0)
         {
-            tsk->name = (char *)alloc_check(len * sizeof(char));
+            tsk->name = (char *)alloc_mem(len * sizeof(char));
             fread(tsk->name, (len + 1) * sizeof(char), 1, stream);
         }
         return 1;

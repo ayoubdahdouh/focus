@@ -10,7 +10,8 @@ int parse_args(char const str[]);
 void error(char c, char msg[]);
 
 // com.h
-void *alloc_check(int size);
+void *alloc_mem(int size);
+void free_mem(void *ptr);
 int read_line(char str[], int n);
 int choose_from_menu(const char msg[], int min, int max, int dft);
 

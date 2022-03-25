@@ -6,7 +6,7 @@
 
 extern char buffer[];
 
-void *alloc_check(int size)
+void *alloc_mem(int size)
 {
     void *ptr;
 
@@ -17,6 +17,14 @@ void *alloc_check(int size)
         exit(EXIT_FAILURE);
     }
     return ptr;
+}
+
+void free_mem(void *ptr)
+{
+    if (!ptr)
+    {
+        free(ptr);
+    }
 }
 
 int read_line(char str[], int n)
@@ -53,4 +61,3 @@ int choose_from_menu(const char msg[], int min, int max, int dft)
     }
     return dft;
 }
-

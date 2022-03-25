@@ -72,7 +72,7 @@ struct tm *get_datetime_struct(time_t timer)
 {
     struct tm *tmp;
 
-    tmp = (struct tm *)alloc_check(sizeof(struct tm));
+    tmp = (struct tm *)alloc_mem(sizeof(struct tm));
     if (timer <= 0)
     {
         time(&timer);

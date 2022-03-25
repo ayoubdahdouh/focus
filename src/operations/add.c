@@ -11,6 +11,7 @@ void add_task()
     task *tsk;
     struct tm *start;
     int day;
+    
     tsk = new_task(&day);
     if (tsk)
     {
@@ -27,13 +28,14 @@ task *new_task(int *day)
     int n;
     task *tsk;
 
-    tsk = (task *)alloc_check(sizeof(task));
+    tsk = (task *)alloc_mem(sizeof(task));
 
     printf("Add a new task to the week.\n\n");
 
     *day = choose_week_day();
     if (*day == -1)
     {
+        free_mem(tsk);
         return NULL;
     }
 
@@ -41,6 +43,7 @@ task *new_task(int *day)
     tsk->start = choose_time("start (HH:MM): ");
     if (!tsk->start)
     {
+        free_mem(tsk);
         return NULL;
     }
 
@@ -48,6 +51,7 @@ task *new_task(int *day)
     tsk->end = choose_time("end (HH:MM): ");
     if (!tsk->end)
     {
+        free_mem(tsk);
         return NULL;
     }
 
@@ -57,7 +61,7 @@ task *new_task(int *day)
         printf("title: ");
         n = read_line(buffer, NAME_SIZE);
     } while (n == 0);
-    tsk->name = (char *)alloc_check((n + 1) * sizeof(char));
+    tsk->name = (char *)alloc_mem((n + 1) * sizeof(char));
     strncpy(tsk->name, buffer, n + 1);
 
     return tsk;

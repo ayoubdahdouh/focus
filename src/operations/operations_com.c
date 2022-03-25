@@ -164,7 +164,7 @@ void choose_text(char **dst, const char msg[])
         n = read_line(buffer, BUFFER_SIZE);
         if (n > 0)
         {
-            *dst = (char *)alloc_check((n + 1) * sizeof(char));
+            *dst = (char *)alloc_mem((n + 1) * sizeof(char));
             strncpy(*dst, buffer, n + 1);
         }
     }
@@ -223,7 +223,7 @@ int search_time_in_list(int day, struct tm *date)
 //     }
 //     if (ok)
 //     {
-//         tsk->name = (char *)alloc_check((n + 1) * sizeof(char));
+//         tsk->name = (char *)alloc_mem((n + 1) * sizeof(char));
 //         strncpy(tsk->name, buffer, n + 1);
 //         return 1;
 //     }
