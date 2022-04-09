@@ -24,16 +24,15 @@ int manage()
     const char menu[] = "1- add\n"
                         "2- remove\n"
                         "3- modify\n"
-                        "4- copy\n"
-                        "5- save\n"
-                        "6- choose another week\n"
-                        "7- exit\n\n"
-                        "(1 by default)>> ";
+                        "4- save changes\n"
+                        "5- another week\n"
+                        "6- exit\n\n"
+                        "(6 by default)>> ";
     printf("\t  _            _       _ \n"
            "\t | |_ ___   __| | ___ | |\n"
            "\t | __/ _ \\ / _` |/ _ \\| |\n"
            "\t | || (_) | (_| | (_) | |\n"
-           "\t  \\__\\___/ \\__,_|\\___/|_|\n");
+           "\t  \\__\\___/ \\__,_|\\___/|_| %s\n\n", PROGRAM_VERSION);
     // printf("**********************************\n");
 
     for (int i = 0; i < N; i++)
@@ -50,10 +49,10 @@ int manage()
 
     while (code != 7)
     {
-        printf("--------------------------------------------\n");
+        printf("----------------* TASK *----------------\n");
         print_week(tasks_l);
-        printf("--------------------------------------------\n");
-        code = choose_from_menu(menu, 1, 7, 1);
+        printf("----------------* MENU *----------------\n");
+        code = choose_from_menu(menu, 1, 7, 6);
         switch (code)
         {
         case 1:
@@ -66,12 +65,9 @@ int manage()
             modify_task();
             break;
         case 4:
-            copy_task();
-            break;
-        case 5:
             save_modification();
             break;
-        case 6:
+        case 5:
             // choose a day
             time_tmp = choose_date();
             if (time_tmp == (time_t)-1) // failed to choose date

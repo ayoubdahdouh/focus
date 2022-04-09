@@ -4,8 +4,6 @@
 #include "main.h"
 #include "src.h"
 
-static char program[] = "focus";
-static char program_version[] = "pre-alpha";
 
 int main(int argc, char const *argv[])
 {
@@ -63,18 +61,18 @@ void error(char c, char msg[])
 {
     if (c)
     {
-        printf("%s: option %c: %s\n", program, c, msg);
+        printf("%s: option %c: %s\n", PROGRAM, c, msg);
     }
     else
     {
-        printf("%s: %s\n", program, msg);
+        printf("%s: %s\n", PROGRAM, msg);
     }
     exit(EXIT_FAILURE);
 }
 
 void version()
 {
-    printf("%s %s\n", program, program_version);
+    printf("%s %s\n", PROGRAM, PROGRAM_VERSION);
 }
 
 void help()
@@ -86,7 +84,7 @@ void help()
            "\t-h\thelp.\n"
            "\t-v\tversion.\n"
            "\tby default, list today's tasks\n",
-           program);
+           PROGRAM);
 }
 
 int parse_args(char const str[])

@@ -244,7 +244,7 @@ int search_day(const char *day)
             break;
         }
     }
-    return (i != 7) ? -1 : i + 1;
+    return (i < 7) ? i : -1;
 }
 int choose_week_day()
 {
@@ -258,12 +258,12 @@ int choose_week_day()
         {
             printf("false");
         }
-        day = search_day(buffer) == -1;
-        if (day == -1)
+        day = search_day(buffer);
+        if (day != -1)
         {
-            printf("false");
+            break;
         }
-
+        printf("false");
         ok--;
     }
     return day;

@@ -8,7 +8,7 @@ void print_week(linklist l[])
     char *days_of_the_week[N] = {"Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"};
     for (int i = 0; i < N; i++)
     {
-        printf("%s :\n", days_of_the_week[i]);
+        printf("%10s :\n", days_of_the_week[i]);
         print_tasks(l[i]);
     }
 }
@@ -92,8 +92,8 @@ void print_tasks(linklist l)
             linc(&iter);
         }
     }
-    else
-    {
-        printf("\tempty\n");
-    }
+    // else
+    // {
+    //     printf("\tempty\n");
+    // }
 }

@@ -58,7 +58,7 @@ task *new_task(int *day)
     // read name
     do
     {
-        printf("title: ");
+        printf("task: ");
         n = read_line(buffer, NAME_SIZE);
     } while (n == 0);
     tsk->name = (char *)alloc_mem((n + 1) * sizeof(char));

@@ -4,6 +4,9 @@
 #include <time.h>
 #include "linklist.h"
 
+#define PROGRAM  "focus"
+#define PROGRAM_VERSION  "pre-alpha"
+
 typedef enum Task_flag
 {
     TASK_OK,

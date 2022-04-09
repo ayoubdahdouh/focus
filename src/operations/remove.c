@@ -9,7 +9,7 @@ void remove_task()
     int day = choose_week_day();
     if (tasks_l[day]->count > 0)
     {
-        print_week(tasks_l);
+        print_tasks(tasks_l[day]);
         num = choose_number("task number: ", 1, tasks_l[day]->count);
         if (num != -1)
         {
@@ -18,7 +18,7 @@ void remove_task()
         }
         else
         {
-            printf("you have tried %d times\nabort.\n\n", NUMBER_OF_TRY);
+            printf("Abort.\n\n");
         }
     }
 }
