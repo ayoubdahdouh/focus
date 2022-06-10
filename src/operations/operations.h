@@ -1,35 +1,28 @@
 #ifndef OPERATIONS_H
 #define OPERATIONS_H
 
-#include "../main.h"
+#include "../global.h"
 
 // com.c
-time_t choose_time(const char message[]);
-void choose_priority(int *pr);
-int choose_status(int *st);
 int choose_number(char const msg[], int min, int max);
 void choose_text(char **dst, const char msg[]);
-int search_time_in_list(int day, struct tm *date);
-int choose_week_day();
 
+// set.c
+void set_task(linklist tasks, int *has_changed);
 
 // add.c
-void add_task();
-task *new_task(int *day);
+void add_task(linklist tasks, int *has_changed);
 
 // remove.c
-void remove_task();
+void remove_task(linklist tasks, int *has_changed);
 
 // modify.c
-void modify_task();
+void rename_task(linklist tasks, int *has_changed);
 
 // save.c
-void save_modification();
+void save_task(linklist tasks, int *has_changed);
 
 // exit.c
-void exit_program();
-
-// copy.c
-void copy_task();
+void quit_app(linklist tasks, int *has_changed);
 
 #endif

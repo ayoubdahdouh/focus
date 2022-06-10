@@ -4,23 +4,19 @@
 #include "../tools.h"
 #include "../print.h"
 
-void remove_task(linklist tasks, int *has_changed)
+void set_task(linklist tasks, int *has_changed)
 {
     int id;
+    task *tmp;
 
     if (tasks->count > 0)
     {
         id = choose_number("task number: ", 1, tasks->count);
         if (id != -1)
         {
-            ldel(tasks, id - 1);
-            // task *t = lget(tasks, id - 1);
-            // t->flag = TASK_REMOVED;
+            tmp = lget(tasks, id-1);
+            tmp->status = 1;
             *has_changed = 1;
-        }
-        else
-        {
-            printf("Abort.\n\n");
         }
     }
     else

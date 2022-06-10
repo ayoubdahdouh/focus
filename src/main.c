@@ -2,57 +2,61 @@
 #include <string.h>
 #include <stdlib.h>
 #include "main.h"
-#include "src.h"
+#include "global.h"
+#include "task.h"
 
+// char filename[];
 
 int main(int argc, char const *argv[])
 {
-    int code = 0;
-    int num;
+    // int code = 0;
 
-    if (argc >= 2)
+    // if (argc >= 2)
+    // {
+    // filename = argv[1];
+    // code = parse_args(argv[1]);
+    // if (code == -1)
+    // {
+    //     error(0, "invalid argument");
+    //     return 0;
+    // }
+    // else if ((code == 's' && argc != 3) ||
+    //          (code != 's' && argc != 2))
+    // {
+    //     error(code, "need a number");
+    // }
+    // }
+
+    // switch (code)
+    // {
+    // case 'h':
+    //     help();
+    //     break;
+    // case 'v':
+    //     version();
+    //     break;
+    // case 's':
+    //     // num = atoi(argv[2]);
+    //     // if (num <= 0)
+    //     // {
+    //     //     error('s', " task number is required");
+    //     // }
+    //     // set_task(num);
+    //     break;
+    // case 'm':
+    //     while (manage())
+    //     {
+    //     }
+
+    //     break;
+    // default:
+    //     // show today tasks
+    //     // code
+    //     break;
+    // }
+    while (manage())
     {
-        code = parse_args(argv[1]);
-        if (code == -1)
-        {
-            error(0, "invalid argument");
-            return 0;
-        }
-        else if ((code == 's' && argc != 3) ||
-                 (code != 's' && argc != 2))
-        {
-            error(code, "need a number");
-        }
     }
-
-    switch (code)
-    {
-    case 'h':
-        help();
-        break;
-    case 'v':
-        version();
-        break;
-    case 's':
-        num = atoi(argv[2]);
-        if (num <= 0)
-        {
-            error('s', " task number is required");
-        }
-        set_task(num);
-        break;
-    case 'm':
-        while (manage())
-        {
-        }
-
-        break;
-    default:
-        // show today tasks
-        // code
-        break;
-    }
-
     // printf("code: %c, num: %d\n", code, num);
     return 0;
 }

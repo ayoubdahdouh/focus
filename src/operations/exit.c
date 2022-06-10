@@ -1,37 +1,34 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include "operations.h"
-#include "../src.h"
+#include "../tools.h"
+#include "../print.h"
 
-void exit_program()
+void quit_app(linklist tasks, int *has_changed)
 {
     int ok = 3;
 
-    if (!is_tasks_l_changed)
+    exit(0);
+    if (!*has_changed)
     {
         return;
     }
-    while (ok--)
+    while (ok)
     {
-
-        // ask to save change
+        ok--;
         printf("Do you want to save the changes ? [y/n] ");
         read_line(buffer, BUFFER_SIZE);
-        if (buffer[0] != 'y' && buffer[0] != 'n')
+        if (buffer[0] == 'y')
         {
-            printf("please select \"y\" for yes and \"n\" for no.\n\n");
+            save_task(tasks, has_changed);
+            printf("changes saved.\n");
+            lclear(tasks);
+            ok = 0;
         }
-        else
+        else if (buffer[0] != 'n')
         {
-            if (buffer[0] == 'y')
-            {
-                save_modification();
-                printf("changes saved.\n");
-            }
-            else
-            {
-                printf("abort.\n");
-            }
-            lclear(tasks_l[0]);
+            printf("changes abort.\n");
+            lclear(tasks);
             ok = 0;
         }
     }

@@ -1,68 +1,28 @@
 #include <stdio.h>
 #include <string.h>
 #include "operations.h"
-#include "../main.h"
-#include "../src.h"
+#include "../tools.h"
+#include "../print.h"
 
-
-void add_task()
+void add_task(linklist tasks, int *has_changed)
 {
-    int i;
-    task *tsk;
-    struct tm *start;
-    int day;
-    
-    tsk = new_task(&day);
-    if (tsk)
+    int size = 0;
+    task *t = (task *)alloc_mem(sizeof(task));
+    task *tmp = (task *)lget(tasks, LLAST);
+    // id
+
+    t->id = tmp->id + 1;
+    // flag
+    t->flag = TASK_NEW;
+    // name
+    while (size == 0)
     {
-        start = get_datetime_struct(tsk->start);
-        i = search_time_in_list(day,start);
-        ladd(tasks_l[day], i, tsk);
-        tsk->flag = 1;
-        is_tasks_l_changed = 1;
+        printf("title: ");
+        size = read_line(buffer, NAME_SIZE);
     }
-}
+    t->title = (char *)alloc_mem((size + 1) * sizeof(char));
+    strncpy(t->title, buffer, size + 1);
 
-task *new_task(int *day)
-{
-    int n;
-    task *tsk;
-
-    tsk = (task *)alloc_mem(sizeof(task));
-
-    printf("Add a new task to the week.\n\n");
-
-    *day = choose_week_day();
-    if (*day == -1)
-    {
-        free_mem(tsk);
-        return NULL;
-    }
-
-    // start time
-    tsk->start = choose_time("start (HH:MM): ");
-    if (!tsk->start)
-    {
-        free_mem(tsk);
-        return NULL;
-    }
-
-    // end time
-    tsk->end = choose_time("end (HH:MM): ");
-    if (!tsk->end)
-    {
-        free_mem(tsk);
-        return NULL;
-    }
-
-    // read name
-    do
-    {
-        printf("task: ");
-        n = read_line(buffer, NAME_SIZE);
-    } while (n == 0);
-    tsk->name = (char *)alloc_mem((n + 1) * sizeof(char));
-    strncpy(tsk->name, buffer, n + 1);
-
-    return tsk;
+    ladd(tasks, LLAST, t);
+    *has_changed = 1;
 }
