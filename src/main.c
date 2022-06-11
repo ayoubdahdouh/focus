@@ -5,15 +5,21 @@
 #include "global.h"
 #include "task.h"
 
-// char filename[];
+char filename[256];
 
 int main(int argc, char const *argv[])
 {
     // int code = 0;
 
-    // if (argc >= 2)
-    // {
-    // filename = argv[1];
+    if (argc >= 2)
+    {
+        strncpy(filename, argv[1], 255);
+    }
+    else
+    {
+        strcpy(filename, "file1.bin");
+    }
+
     // code = parse_args(argv[1]);
     // if (code == -1)
     // {
@@ -41,7 +47,7 @@ int main(int argc, char const *argv[])
     //     // {
     //     //     error('s', " task number is required");
     //     // }
-    //     // set_task(num);
+    //     // taskset(num);
     //     break;
     // case 'm':
     //     while (manage())

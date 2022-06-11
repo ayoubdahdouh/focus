@@ -29,6 +29,6 @@ typedef struct _task
 #define NAME_SIZE 256
 
 extern char buffer[];
-extern char filename[];
+extern char filename[256];
 
 #endif

@@ -3,19 +3,20 @@
 #include <time.h>
 #include <string.h>
 #include "print.h"
-#include "operations/operations.h"
+#include "task.h"
 #include "tools.h"
 
 #define MAX_CHRUNK 2048
 FILE *fp = NULL;
-char filename[] = "file1.bin";
+char filename[];
 extern char buffer[];
 
 void print_tasks(linklist tasks)
 {
-    const char COLOR_RED[] = "\e[0;31m", COLOR_GREEN[] = "\e[0;32m", COLOR_NC[] = "\e[0m";
+    const char COLOR_GREEN[] = "\e[0;32m", COLOR_NC[] = "\e[0m";
 
     task *t;
+    int cnt = 1;
 
     if (!lempty(tasks))
     {
@@ -32,13 +33,13 @@ void print_tasks(linklist tasks)
 
             if (t->status)
             {
-                printf("%d - [ %sOK%s ] %s\n", t->id, COLOR_GREEN, COLOR_NC, t->title);
+                printf("%d - [ %sOK%s ] %s\n", cnt, COLOR_GREEN, COLOR_NC, t->title);
             }
             else
             {
-                printf("%d - [ %sNO%s ] %s\n", t->id, COLOR_RED, COLOR_NC, t->title);
+                printf("%d - [ NO ] %s\n", cnt, t->title);
             }
-
+            cnt++;
             linc(&iter);
         }
     }
@@ -56,6 +57,7 @@ void open_file()
         exit(EXIT_FAILURE);
     }
 }
+
 void truncate_file()
 {
     if (fp)
@@ -77,6 +79,7 @@ int task_len(task *t)
 
     return size;
 }
+
 void write_task(task *t)
 {
     int size = task_len(t);
@@ -97,16 +100,13 @@ void write_task(task *t)
 
     fflush(fp);
 }
+
 // read task from the current position of file
 int read_task(task *t)
 {
     int size;
-    if (fread(&size, sizeof(int), 1, fp))
+    if (fread(&size, sizeof(int), 1, fp) && size > 0)
     {
-        if (size == 0)
-        {
-            return 0;
-        }
         // id
         fread(&t->id, sizeof(int), 1, fp);
         // status
@@ -123,18 +123,21 @@ int read_task(task *t)
 
     return 0;
 }
+
 // read all tasks in the file
 void read_tasks(linklist tasks)
 {
     task *t;
+
+    printf("%s\n", filename);
     open_file();
-    int cnt=0;
+    int cnt = 0;
     while (!feof(fp))
     {
-        cnt++;
         t = (task *)alloc_mem(sizeof(task));
         if (read_task(t))
         {
+            cnt++;
             ladd(tasks, LLAST, t);
         }
         else
