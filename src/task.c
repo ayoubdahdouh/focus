@@ -17,7 +17,7 @@ linklist tasks;
 int manage()
 {
     int code;
-    const char menu[] = "\n[ 1:add | 2:remove | 3:rename | 4:copy | 5:move | 6:set | 7:save | 8:quit ]\n>>> ";
+    const char menu[] = "\n┌┈┈[ 1:add | 2:remove | 3:rename | 4:copy | 5:move | 6:set | 7:save | 8:quit ]\n├┈┈[command] "; //╰
 
     has_changed = 0;
     tasks = lopen();
@@ -27,7 +27,7 @@ int manage()
     while (code != 7)
     {
         // system("clear");
-        printf("----------------------------------------------------\n");
+        printf("\n\n"); // ----------------------------------------------------
         print_tasks(tasks);
         code = choose_from_menu(menu, 1, 8, 8);
         switch (code)
@@ -64,24 +64,65 @@ int manage()
 
 void taskadd(linklist tasks, int *has_changed)
 {
-    int size = 0;
-    task *t = (task *)alloc_mem(sizeof(task));
+    int level, num, size = 0;
+    task *t, *tmp;
 
-    // id
-    t->id = tasks->count + 1;
+    t = (task *)alloc_mem(sizeof(task));
 
-    // flag
+    num = choose_from_menu("├┈┈[number] ", 0, tasks->count, 0);
+
+    int ok = 0;
+    while (!ok)
+    {
+        level = choose_from_menu("├┈┈[level] ", 0, 10, 0);
+
+        if (level > 0)
+        {
+            int i = num - 1;
+            while (i > 0 && !ok)
+            {
+                tmp = (task *)lget(tasks, i - 1);
+                if (tmp->level == level - 1)
+                {
+                    ok = 1;
+                }
+            }
+            if (!ok)
+            {
+                printf("├┈┈[%sError%s] %sNo parent%s\n", WARNING, NOCOLOR, WARNING, NOCOLOR);
+            }
+            else
+            {
+                t->level = level;
+            }
+        }
+        else
+        {
+            ok = 1;
+            t->level = level;
+        }
+    }
+
+    t->level = level;
     t->flag = TASK_NEW;
-    // name
     while (size == 0)
     {
-        printf("title: ");
+        printf("├┈┈[title] ");
         size = read_line(buffer, NAME_SIZE);
     }
     t->title = (char *)alloc_mem((size + 1) * sizeof(char));
     strncpy(t->title, buffer, size + 1);
 
-    ladd(tasks, LLAST, t);
+    if (num > 0)
+    {
+        ladd(tasks, num - 1, t);
+    }
+    else
+    {
+        ladd(tasks, LLAST, t);
+    }
+
+    printf("╰┈┈[%sOK%s] ", SUCCESS, NOCOLOR);
     *has_changed = 1;
 }
 
@@ -138,7 +179,7 @@ task *taskclone(task *t)
     task *tmp;
 
     tmp = (task *)alloc_mem(sizeof(task));
-    tmp->id = t->id;
+    tmp->level = t->level;
     tmp->status = t->status;
     len = strlen(t->title) + 1;
     tmp->title = (char *)alloc_mem(len * sizeof(char));
@@ -212,7 +253,7 @@ void tasksav(linklist tasks, int *has_changed)
             t = (task *)it->data;
             write_task(t);
             t->flag = TASK_OK;
-            printf("wirte task %d...\n", t->id);
+            printf("wirte task %d...\n", t->level);
             linc(&it);
         }
         *has_changed = 0;

@@ -13,7 +13,6 @@ extern char buffer[];
 
 void print_tasks(linklist tasks)
 {
-    const char COLOR_GREEN[] = "\e[0;32m", COLOR_NC[] = "\e[0m";
 
     task *t;
     int cnt = 1;
@@ -30,14 +29,17 @@ void print_tasks(linklist tasks)
                 linc(&iter);
                 continue;
             }
-
+            for (int i = 0; i < t->level; i++)
+            {
+                printf("\t");
+            }
             if (t->status)
             {
-                printf("%d - [ %sOK%s ] %s\n", cnt, COLOR_GREEN, COLOR_NC, t->title);
+                printf("%d --- [%sOK%s] %s\n", cnt, SUCCESS, NOCOLOR, t->title);
             }
             else
             {
-                printf("%d - [ NO ] %s\n", cnt, t->title);
+                printf("%d --- %s\n", cnt, t->title);
             }
             cnt++;
             linc(&iter);
@@ -87,7 +89,7 @@ void write_task(task *t)
     // write length of t
     fwrite(&size, sizeof(int), 1, fp);
     // write id
-    fwrite(&t->id, sizeof(int), 1, fp);
+    fwrite(&t->level, sizeof(int), 1, fp);
     // write status
     fwrite(&t->status, sizeof(int), 1, fp);
     // write title
@@ -108,7 +110,7 @@ int read_task(task *t)
     if (fread(&size, sizeof(int), 1, fp) && size > 0)
     {
         // id
-        fread(&t->id, sizeof(int), 1, fp);
+        fread(&t->level, sizeof(int), 1, fp);
         // status
         fread(&t->status, sizeof(int), 1, fp);
         // title

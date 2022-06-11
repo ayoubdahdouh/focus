@@ -13,10 +13,9 @@
 #define TASK_REMOVED 3
 #define TASK_LIST 4
 
-
 typedef struct _task
 {
-    int id;
+    int level;
     int status; // 1:done, 0:not done
     char *title;
     int flag;
@@ -30,5 +29,10 @@ typedef struct _task
 
 extern char buffer[];
 extern char filename[256];
+
+#define ERROR "\e[0;31m"
+#define WARNING "\e[0;33m"
+#define SUCCESS "\e[0;32m"
+#define NOCOLOR "\e[0m"
 
 #endif
