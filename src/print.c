@@ -31,7 +31,7 @@ void print_tasks(linklist tasks)
             }
             for (int i = 0; i < t->level; i++)
             {
-                printf("\t");
+                printf("   ");
             }
             if (t->status)
             {

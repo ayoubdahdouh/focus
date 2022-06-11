@@ -62,26 +62,22 @@ int manage()
     return 1;
 }
 
-void taskadd(linklist tasks, int *has_changed)
+int choose_level(linklist tasks, int num)
 {
-    int level, num, size = 0;
-    task *t, *tmp;
+    int level = 0, n, ok = 0;
+    task *tmp;
 
-    t = (task *)alloc_mem(sizeof(task));
-
-    num = choose_from_menu("├┈┈[number] ", 0, tasks->count, 0);
-
-    int ok = 0;
     while (!ok)
     {
         level = choose_from_menu("├┈┈[level] ", 0, 10, 0);
 
         if (level > 0)
         {
-            int i = num - 1;
-            while (i > 0 && !ok)
+            n = (num == 0) ? tasks->count - 1 : num - 1;
+
+            for (int i = 0; i < n && !ok; i++)
             {
-                tmp = (task *)lget(tasks, i - 1);
+                tmp = (task *)lget(tasks, i);
                 if (tmp->level == level - 1)
                 {
                     ok = 1;
@@ -91,15 +87,27 @@ void taskadd(linklist tasks, int *has_changed)
             {
                 printf("├┈┈[%sError%s] %sNo parent%s\n", WARNING, NOCOLOR, WARNING, NOCOLOR);
             }
-            else
-            {
-                t->level = level;
-            }
         }
         else
         {
             ok = 1;
-            t->level = level;
+        }
+    }
+    return level;
+}
+void taskadd(linklist tasks, int *has_changed)
+{
+    int level = 0, num = 0, size = 0;
+    task *t;
+
+    t = (task *)alloc_mem(sizeof(task));
+
+    if (!lempty(tasks))
+    {
+        num = choose_from_menu("├┈┈[number] ", 0, tasks->count, 0);
+        if (num > 1)
+        {
+            level = choose_level(tasks, num);
         }
     }
 
@@ -132,7 +140,7 @@ void taskdel(linklist tasks, int *has_changed)
 
     if (tasks->count > 0)
     {
-        id = choose_number("task number: ", 1, tasks->count);
+        id = choose_number("├┈┈[number] ", 1, tasks->count);
         if (id != -1)
         {
             ldel(tasks, id - 1);
@@ -153,15 +161,16 @@ void taskdel(linklist tasks, int *has_changed)
 
 void taskmod(linklist tasks, int *has_changed)
 {
-    int id;
+    int num;
     task *tmp;
 
     if (tasks->count > 0)
     {
-        id = choose_number("task number: ", 1, tasks->count);
-        if (id != -1)
+        num = choose_number("├┈┈[number] ", 1, tasks->count);
+        if (num != -1)
         {
-            tmp = lget(tasks, id - 1);
+            tmp = lget(tasks, num - 1);
+            tmp->level = choose_level(tasks, num);
             choose_text(&tmp->title, "title: ");
             tmp->flag = TASK_MODIFIED;
             *has_changed = 1;
@@ -186,6 +195,7 @@ task *taskclone(task *t)
     strncpy(tmp->title, t->title, len);
     return tmp;
 }
+
 void taskcpy(linklist tasks, int *has_changed)
 {
     int from, to;
@@ -193,10 +203,10 @@ void taskcpy(linklist tasks, int *has_changed)
 
     if (tasks->count > 0)
     {
-        from = choose_number("from: ", 1, tasks->count);
+        from = choose_number("├┈┈[from] ", 1, tasks->count);
         if (from != -1)
         {
-            to = choose_number("to: ", 1, tasks->count);
+            to = choose_number("├┈┈[to] ", 1, tasks->count);
             if (to != -1)
             {
                 tmp = taskclone(lget(tasks, from - 1));
@@ -210,25 +220,93 @@ void taskcpy(linklist tasks, int *has_changed)
         printf("List is empty...");
     }
 }
+int has_children(linklist tasks, int num)
+{
+    task *tmp, *tmp2;
+    if (tasks->count < 2)
+    {
+        return 0;
+    }
 
+    if (num < tasks->count)
+    {
+        tmp = (task *)lget(tasks, num - 1);
+        tmp2 = (task *)lget(tasks, num);
+        if (tmp->level < tmp2->level)
+        {
+            return 1;
+        }
+        else
+        {
+            return 0;
+        }
+    }
+    return 0;
+}
 void taskmov(linklist tasks, int *has_changed)
 {
     int from, to;
-    task *tmp;
+    task *tmp, *tmp2;
 
     if (tasks->count > 0)
     {
-        from = choose_number("from: ", 1, tasks->count);
+        from = choose_number("├┈┈[from] ", 1, tasks->count);
         if (from != -1)
         {
-            to = choose_number("to: ", 1, tasks->count);
+            to = choose_number("├┈┈[to] ", 1, tasks->count);
             if (to != -1)
             {
-                tmp = taskclone(lget(tasks, from - 1));
-                ldel(tasks, from - 1);
-                ladd(tasks, to - 1, tmp);
+                if (has_children(tasks, from))
+                {
+                    int res = choose_from_menu("├┈┈[ move children ? ] ", 0, 1, 0);
+                    if (res == 0)
+                    {
+                        // decrease level of children
+                        tmp = (task *)lget(tasks, from - 1);
+                        for (int i = from; i < tasks->count; i++)
+                        {
+                            tmp2 = (task *)lget(tasks, i);
+                            if (tmp2->level <= tmp->level)
+                            {
+                                break;
+                            }
+                            else
+                            {
+                                tmp2->level--;
+                            }
+                        }
+                        ldel(tasks, from - 1);
+                        ladd(tasks, to - 1, tmp);
+                    }
+                    else
+                    {
+                        // move children
+                        tmp = (task *)lget(tasks, from - 1);
+                        ldel(tasks, from - 1);
+                        ladd(tasks, to - 1, tmp);
+
+                        tmp2 = (task *)lget(tasks, from - 1);
+                        while (tmp2->level <= tmp->level)
+                        {
+                            ldel(tasks, from - 1);
+                            ladd(tasks, to - 1, tmp);
+                            tmp2 = (task *)lget(tasks, from - 1);
+                        }
+                    }
+                }
+                else
+                {
+                    tmp = (task *)lget(tasks, from - 1);
+                    ldel(tasks, from - 1);
+                    ladd(tasks, to - 1, tmp);
+                }
                 *has_changed = 1;
+                printf("╰┈┈[%sOK%s] ", SUCCESS, NOCOLOR);
             }
+        }
+        else
+        {
+            printf("Discard\n");
         }
     }
     else
@@ -269,7 +347,7 @@ void taskset(linklist tasks, int *has_changed)
 
     if (tasks->count > 0)
     {
-        id = choose_number("task number: ", 1, tasks->count);
+        id = choose_number("├┈┈[number] ", 1, tasks->count);
         if (id != -1)
         {
             tmp = lget(tasks, id - 1);
