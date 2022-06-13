@@ -1,13 +1,13 @@
 .vscode/
 .gitignore
-makefile
 test/
 build/
 test/example.c
 TODO
 todol
 main
-data_tasks.bin
+*.bin
+
 
 # Prerequisites
 *.d

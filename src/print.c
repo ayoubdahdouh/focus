@@ -8,7 +8,6 @@
 
 #define MAX_CHRUNK 2048
 FILE *fp = NULL;
-char filename[];
 extern char buffer[];
 
 void print_tasks(linklist tasks)
